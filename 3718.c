@@ -26,9 +26,8 @@ EXPORT_SYMBOL(ADRangeSelect);
 u16 ReadAD(void){
 while(inb(STATUS)&0b10000000!=0b00000000);
 outb(0xFF,R0);
-
 while(inb(STATUS)&0b10010000!=0b00010000);
-
+return (u16)((inb(R0)>>4)|(inb(R1)<<4));
 }
 EXPORT_SYMBOL(ReadAD);
 
