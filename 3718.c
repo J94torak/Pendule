@@ -1,25 +1,26 @@
 #include "3718.h"
 
-#define R0 BASE
-#define R1 BASE  + 1
-#define MUX BASE + 2
-#define W0 BASE  + 3
-#define STATUS BASE  + 8
-#define CONTROLE BASE  + 9
-#define COUNTEN BASE + 10
-#define W1 BASE + 11
-
 
 int init3718(void){
-
-  
-
-
+outb(0x00,CONTROLE); 
+outb(0x01,COUNT_EN);
+return 0;
 }
-void SetChanel(int){
+
+void SetChanel(unsigned char in_channel){
+assert(in_channel<9);
+unsigned char v_channel=in_channel<<4+in_channel;
+outb(in_channel,MUX);
 }
-void ADRangeSelect(int,int){
+
+void ADRangeSelect(unsigned char channel,unsigned char range){
+assert(range<9);
+unsigned char v_channelBefore=inb(MUX)
+SetChanel(channel);
+outb(range,RANGE);
+SetChanel(v_channelBefore);
 }
+
 u16 ReadAD(void){
 }
 
