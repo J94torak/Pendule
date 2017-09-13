@@ -1,7 +1,6 @@
 
 #include<linux/init.h>
 #include<linux/module.h>
-
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <rtai.h>
@@ -29,11 +28,14 @@ static RT_TASK tache_horloge;
 void test(long arg) {
 
   u16 i=0;
+  unsigned int f=0;
    while (1) 
    {
     i=ReadAD();
-    //i=(i>>12)-1;
-    printk("Voltage=%d\n",(int)i);
+//Lecture pour 0 à 10V
+    f=(unsigned int)i;
+    f=f*2+f/2;
+    printk("Voltage=%dmV\n",f);
     rt_task_wait_period();
  }
 }
