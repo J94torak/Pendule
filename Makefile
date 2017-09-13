@@ -1,4 +1,4 @@
-obj-m	   := 3718.o squelette_test.o
+obj-m	   := 3718.o 3712.o squelette_test.o
 
 PATH := /opt/x86_64/gcc/gcc-3.4.4/bin:$(PATH)
 KIT = arcom6.esiee.fr
@@ -14,7 +14,7 @@ default:
 	i386 -B --uname-2.6 make -C $(KDIR) M=$(PWD) modules
 
 clean:
-	-rm -f *.o 3718*.ko squelette*.ko .*.cmd .*.flags *.mod.c *~
+	-rm -f *.o 3718*.ko 3712*.ko squelette*.ko .*.cmd .*.flags *.mod.c *~
 	-rm -r .tmp*
 send:
 	scp *.ko runarcom arcom@$(KIT):/home/arcom

@@ -8,7 +8,7 @@
 #include <rtai_fifos.h>
 
 #include"3718.h"
-
+#include"3712.h"
 
 
 MODULE_LICENSE("GPL");
@@ -40,6 +40,17 @@ void test(long arg) {
  }
 }
 
+void test2(long arg) {
+
+
+   while (1) 
+   {
+    
+    SetDA(0x00,0x100);
+    rt_task_wait_period();
+ }
+}
+
 
 static int test_init(void) {
 
@@ -48,13 +59,13 @@ static int test_init(void) {
 
 
     /* creation tache périodiques*/
-   if(SetChanel(0x01)!=0x00)
+   /*if(SetChanel(0x01)!=0x00)
       printk("SetChannel=0x01");
   else
       printk("No answer");
-    ADRangeSelect(0x01,RANGE_0__10);
+    ADRangeSelect(0x01,RANGE_0__10);*/
   rt_set_oneshot_mode();
-   ierr = rt_task_init(&tache_horloge,test,0,STACK_SIZE, PRIORITE, 0, 0);  
+   ierr = rt_task_init(&tache_horloge,test2,0,STACK_SIZE, PRIORITE, 0, 0);  
   start_rt_timer(nano2count(TICK_PERIOD));
   now = rt_get_time();
   rt_task_make_periodic(&tache_horloge, now, nano2count(PERIODE_CONTROL));
