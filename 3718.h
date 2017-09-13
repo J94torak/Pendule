@@ -22,7 +22,7 @@
 #define RANGE_0_05 2
 #define RANGE_0_005 3
 #define RANGE_0__10 4
-#define RANGE_0__1 5
+#define RANGE_0__1 5 
 #define RANGE_0__0_1 6
 #define RANGE_0__0_01 7
 #define RANGE_10 8

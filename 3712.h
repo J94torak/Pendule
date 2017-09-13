@@ -19,14 +19,9 @@
 #define PCM3712_OUT (BASE_3712 +5)
 
 
-//int initPCM3712(void);
+int init3712(void);
+void SetDA(unsigned char channel,int value);
 
- void PCM3712setda0(unsigned value);
-
- void PCM3712setda1(unsigned value);
-
-unsigned PCM3712VBitoValue(float vref, float V);
-unsigned PCM3712VUnitoValue(float vref, float V);
 #endif
 
 
