@@ -46,7 +46,7 @@ void test2(long arg) {
    while (1) 
    {
     
-    SetDA(0x00,0x100);
+    SetDA(0,8.0);
     rt_task_wait_period();
  }
 }

@@ -28,6 +28,22 @@ outb(0xFF,PCM3712_SYNC);
 
 }
 
+int VoltageToValue(double voltage){
+
+return (int)(voltage/10.0*2047.0+2048.0);
+}
+int SetDAVol(unsigned char channel,double voltage){
+
+int value=0;
+if(voltage<-10.0||voltage>10.0)
+return -1;
+value=VoltageToValue(voltage);
+printk("Value=%d\n",value);
+SetDA(channel,value);
+return 0;
+}
+
+
 
 static int init_3712(void) {
   init3712();
@@ -43,5 +59,6 @@ static void exit_3712(void) {
 module_init(init_3712);
 module_exit(exit_3712);
 
-EXPORT_SYMBOL(init3712);
+EXPORT_SYMBOL(VoltageToValue);
+EXPORT_SYMBOL(SetDAVol);
 EXPORT_SYMBOL(SetDA);
