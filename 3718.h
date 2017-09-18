@@ -35,6 +35,6 @@ int SetChanel(unsigned char);
 int ADRangeSelect(unsigned char,unsigned char);
 u16 ReadAD(void);
 u8 ReadChannel(void);
-
+double valueToVoltage(double down, double up, int value);
 
 #endif

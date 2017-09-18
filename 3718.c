@@ -48,6 +48,11 @@ printk("Channel=%d\n",((int)(inb(R0)&(0x0F))));
 return (u8)(inb(R0)&(0x0F));
 }
 
+double valueToVoltage(double down, double up, int value){
+
+return (((double)value)-2048.0)*(up-down)/2.0/2047.0;
+
+}
 
 static int init_3718(void) {
   init3718();
