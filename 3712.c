@@ -34,9 +34,11 @@ return (int)(voltage/10.0*2047.0+2048.0);
 }
 int SetDAVol(unsigned char channel,double voltage){
 
+printk("In function SetDAVol");
 int value=0;
-if(voltage<-10.0||voltage>10.0)
-return -1;
+/*if(voltage<-10.0||voltage>10.0)
+printk("Exit");
+return -1;*/
 value=VoltageToValue(voltage);
 printk("Value=%d\n",value);
 SetDA(channel,value);
@@ -60,5 +62,5 @@ module_init(init_3712);
 module_exit(exit_3712);
 
 EXPORT_SYMBOL(VoltageToValue);
-EXPORT_SYMBOL(SetDAVol);
 EXPORT_SYMBOL(SetDA);
+EXPORT_SYMBOL(SetDAVol);
