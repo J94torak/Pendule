@@ -9,6 +9,8 @@
 
 #include"3718.h"
 #include"3712.h"
+#include "controller.h"
+#include "sensor.h"
 
 
 MODULE_LICENSE("GPL");
@@ -40,7 +42,10 @@ void test(long arg) {
  }
 }
 
-void test2(long arg) {
+
+
+
+void test2(long arg){
 	
 	int voltage=0;
    while (1) 
@@ -63,8 +68,34 @@ void test2(long arg) {
     
     rt_task_wait_period();
  }
+ 
 }
 
+void test3(long arg){
+
+	double angleV=0,positionV=0;
+	double commande=0;
+	
+	while(1){
+		
+		angleV    = acquisition_angle();
+		positionV = acquisition_position();
+		printk("positionV=%dmv\n",(int)(positionV*1000.0)); 
+		printk("angleV=%dmv\n",(int)(angleV*1000.0)); 
+		commande  = commandeVoltage(angleV,positionV);
+		printk("Commande = %dmv\n", (int)(commande*1000.0));
+		if(((int)(positionV*1000.0))<8000&&((int)(positionV*1000.0))>-5600&&((int)(commande*1000.0))>-10000&&((int)(commande*1000.0))<10000)
+			SetDAVol(0,commande);
+		else{
+			printk("Position NOK \n");
+			SetDAVol(0,0.0);
+			}
+		
+		rt_task_wait_period();
+		
+	}
+
+}
 
 static int test_init(void) {
 
@@ -73,11 +104,9 @@ static int test_init(void) {
 
 
     /* creation tache périodiques*/
-   
-    ADRangeSelect(0x00,RANGE_5);
-    ADRangeSelect(0x01,RANGE_10);
+  
   rt_set_oneshot_mode();
-   ierr = rt_task_init(&tache_horloge,test2,0,STACK_SIZE, PRIORITE, 1, 0);  
+   ierr = rt_task_init(&tache_horloge,test3,0,STACK_SIZE, PRIORITE, 1, 0);  
   start_rt_timer(nano2count(TICK_PERIOD));
   now = rt_get_time();
   rt_task_make_periodic(&tache_horloge, now, nano2count(PERIODE_CONTROL));
