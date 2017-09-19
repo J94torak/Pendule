@@ -51,7 +51,7 @@ void test2(long arg) {
       printk("No answer\n");
     voltage = ReadAD();
     printk("ValueRead channel 0=%d\n",(unsigned int)voltage);
-    SetDAVol(0,valueToVoltagePolar(10,(int)(voltage)));
+    SetDAVol(0,valueToVoltagePolar(5,(int)(voltage)));
     
       if(SetChanel(0x01)!=0x00)
       printk("SetChannel=0x01\n");
@@ -74,7 +74,7 @@ static int test_init(void) {
 
     /* creation tache périodiques*/
    
-    ADRangeSelect(0x00,RANGE_10);
+    ADRangeSelect(0x00,RANGE_5);
     ADRangeSelect(0x01,RANGE_10);
   rt_set_oneshot_mode();
    ierr = rt_task_init(&tache_horloge,test2,0,STACK_SIZE, PRIORITE, 1, 0);  
