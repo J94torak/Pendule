@@ -48,9 +48,15 @@ printk("Channel=%d\n",((int)(inb(R0)&(0x0F))));
 return (u8)(inb(R0)&(0x0F));
 }
 
-double valueToVoltage(double down, double up, int value){
+double valueToVoltagePolar(int vRef, int value){
 
-return (((double)value)-2048.0)*(up-down)/2.0/2047.0;
+return ((double)vRef)*(((double)value)-2048.0)/2048.0;
+
+}
+
+double valueToVoltageUniPolar(int vRef, int value){
+
+return ((double)vRef)*2.0*((double)value)/4096.0;
 
 }
 
@@ -70,3 +76,5 @@ EXPORT_SYMBOL(SetChanel);
 EXPORT_SYMBOL(ADRangeSelect);
 EXPORT_SYMBOL(ReadAD);
 EXPORT_SYMBOL(ReadChannel);
+EXPORT_SYMBOL(valueToVoltagePolar);
+EXPORT_SYMBOL(valueToVoltageUniPolar);

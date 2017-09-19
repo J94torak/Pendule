@@ -30,8 +30,10 @@ outb(0xFF,PCM3712_SYNC);
 
 int VoltageToValue(double voltage){
 
-return (int)(voltage/10.0*2047.0+2048.0);
+return (int)(voltage/10.0*2048.0+2048.0);
 }
+
+
 int SetDAVol(unsigned char channel,double voltage){
 
 printk("In function SetDAVol");
