@@ -41,12 +41,26 @@ void test(long arg) {
 }
 
 void test2(long arg) {
-
-
+	
+	int voltage=0;
    while (1) 
    {
+   if(SetChanel(0x00)!=0x00)
+      printk("SetChannel=0x00\n");
+  else
+      printk("No answer\n");
+    voltage = ReadAD();
+    printk("ValueRead channel 0=%d\n",(unsigned int)voltage);
+    SetDAVol(0,valueToVoltagePolar(10,(int)(voltage)));
     
-    SetDAVol(0,-4.27);
+      if(SetChanel(0x01)!=0x00)
+      printk("SetChannel=0x01\n");
+  else
+      printk("No answer\n");
+    voltage = ReadAD();
+    printk("ValueRead channel 1=%d\n",(unsigned int)voltage);
+    SetDAVol(1,valueToVoltagePolar(10,(int)(voltage)));
+    
     rt_task_wait_period();
  }
 }
@@ -59,13 +73,11 @@ static int test_init(void) {
 
 
     /* creation tache périodiques*/
-   /*if(SetChanel(0x01)!=0x00)
-      printk("SetChannel=0x01");
-  else
-      printk("No answer");
-    ADRangeSelect(0x01,RANGE_0__10);*/
+   
+    ADRangeSelect(0x00,RANGE_10);
+    ADRangeSelect(0x01,RANGE_10);
   rt_set_oneshot_mode();
-   ierr = rt_task_init(&tache_horloge,test2,0,STACK_SIZE, PRIORITE, 0, 0);  
+   ierr = rt_task_init(&tache_horloge,test2,0,STACK_SIZE, PRIORITE, 1, 0);  
   start_rt_timer(nano2count(TICK_PERIOD));
   now = rt_get_time();
   rt_task_make_periodic(&tache_horloge, now, nano2count(PERIODE_CONTROL));
