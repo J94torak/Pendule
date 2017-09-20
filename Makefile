@@ -1,7 +1,7 @@
-obj-m	   := 3718.o 3712.o squelette_test.o
+obj-m	   := 3718.o 3712.o controller.o sensor.o squelette_test.o
 
 PATH := /opt/x86_64/gcc/gcc-3.4.4/bin:$(PATH)
-KIT = arcom6.esiee.fr
+KIT = arcom22.esiee.fr
 CURRENT = 2.6.16.14-arcom1
 KDIR = /usr/lib/arcom/lib/modules/${CURRENT}/build
 PWD = $(shell pwd)
