@@ -45,10 +45,10 @@ double commande(double angle, double position){
 	x3k=x3;
 	x4k=x4;
 
-	x1= 0.6300*x1k-0.1206*x2k-0.0008*x3k+0.0086*x4k+0.3658*angle+0.1200*position;
-	x2=-0.0953*x1k+0.6935*x2k+0.0107*x3k+0.0012*x4k+0.0993*angle+0.3070*position;
-	x3=-0.2896*x1k-1.9184*x2k+1.1306*x3k+0.2351*x4k+1.0887*angle+2.0141*position;
-	x4=-3.9680*x1k-1.7733*x2k-0.1546*x3k+0.7222*x4k+3.1377*angle+1.6599*position;
+	x1=  0.7143*x1k+0.0245*x2k-0.0008*x3k+0.0086*x4k+0.2815*angle-0.0251*position;
+	x2=0.0239*x1k+0.8609*x2k+0.0107*x3k+0.0012*x4k-0.0199*angle+0.1396*position;
+	x3=0.9140*x1k-0.3043*x2k+1.1306*x3k+0.2351*x4k-0.1149*angle+0.4000*position;
+	x4=-2.4476*x1k+0.0016*x2k-0.1546*x3k+0.7222*x4k+1.6173*angle-0.1150*position;
 
 	return -80.3092*x1-9.6237*x2-14.1215*x3-23.6260*x4;	
 
@@ -78,7 +78,7 @@ return commande(conversionVoltToAngle(angle),conversionVoltToPosition(position))
 
 static int init_controller(void) {
 
-	init_control(9.53,-7.41,-3.87,4.037);
+	init_control(10.06,-6.53,-3.822,4.039);
   return 0;
 }
 
