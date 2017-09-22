@@ -1,5 +1,7 @@
 #include "controller.h"
 
+MODULE_LICENSE("GPL");
+
 double x1;
 double x2;
 double x3;
@@ -23,12 +25,11 @@ void init_control(double pposition0,double pposition85, double pangle_15, double
 	position85=pposition85;
 	angle_15=pangle_15;
 	angle15=pangle15;
-	pasPosition=(position0-position85)/85.0 ;   //Volt/cm
+	pasPosition=(position0-position85)/90.5 ;   //Volt/cm
   pasAngle= (angle_15-angle15)/30.0;          //volt/degre
 
 
 }
-
 
 
 double commande(double angle, double position){
@@ -45,7 +46,7 @@ double commande(double angle, double position){
 	x3k=x3;
 	x4k=x4;
 
-	x1=  0.7143*x1k+0.0245*x2k-0.0008*x3k+0.0086*x4k+0.2815*angle-0.0251*position;
+	x1=0.7143*x1k+0.0245*x2k-0.0008*x3k+0.0086*x4k+0.2815*angle-0.0251*position;
 	x2=0.0239*x1k+0.8609*x2k+0.0107*x3k+0.0012*x4k-0.0199*angle+0.1396*position;
 	x3=0.9140*x1k-0.3043*x2k+1.1306*x3k+0.2351*x4k-0.1149*angle+0.4000*position;
 	x4=-2.4476*x1k+0.0016*x2k-0.1546*x3k+0.7222*x4k+1.6173*angle-0.1150*position;
@@ -67,7 +68,7 @@ double conversionVoltToPosition(double position){
 	
 	double position_converti=0;
 	position_converti = position/pasPosition/100.0;
-	printk("position_converti = %d cm\n",(int)(position_converti*100));
+	printk("position_converti = %d mm\n",(int)(position_converti*1000));
 	return position_converti;
 }
 
@@ -78,7 +79,7 @@ return commande(conversionVoltToAngle(angle),conversionVoltToPosition(position))
 
 static int init_controller(void) {
 
-	init_control(10.06,-6.53,-3.822,4.039);
+	init_control(10.0,-6.27, -3.81, 4.032);
   return 0;
 }
 

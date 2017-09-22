@@ -9,8 +9,8 @@ int initsensor(){
 }
 
 
-double acquisition_angle(){
-int voltage=0;
+u16 acquisition_angle(){
+u16 voltage=0;
 
 	if(SetChanel(0x00)!=0x00)
       printk("Angle:OK\n");
@@ -18,19 +18,19 @@ int voltage=0;
       printk("Angle:NOK\n");
     voltage = ReadAD();
     printk("angle channel 0=%d\n",(unsigned int)voltage);
-return	valueToVoltagePolar(5, voltage);
+return	 voltage;
 
 }
 
-double acquisition_position(){
-int voltage=0;
+u16 acquisition_position(){
+u16 voltage=0;
 		if(SetChanel(0x01)!=0x00)
       printk("Position:OK\n");
   else
       printk("Position:NOK\n");
     voltage = ReadAD();
     printk("Position channel 1=%d\n",(unsigned int)voltage);
-return valueToVoltagePolar(10, voltage);    
+return voltage;    
 
 }
 

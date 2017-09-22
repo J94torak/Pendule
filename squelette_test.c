@@ -11,6 +11,7 @@
 #include"3712.h"
 #include "controller.h"
 #include "sensor.h"
+#include "SJA1000.h"
 
 
 MODULE_LICENSE("GPL");
@@ -106,6 +107,7 @@ static int test_init(void) {
     /* creation tache périodiques*/
   
   rt_set_oneshot_mode();
+    
    ierr = rt_task_init(&tache_horloge,test3,0,STACK_SIZE, PRIORITE, 1, 0);  
   start_rt_timer(nano2count(TICK_PERIOD));
   now = rt_get_time();
