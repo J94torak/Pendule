@@ -1,0 +1,1 @@
+cmd_/home/rtai/Pendule/Pendule_copie/sensor.ko := ld -m elf_i386 -m elf_i386 -r -o /home/rtai/Pendule/Pendule_copie/sensor.ko /home/rtai/Pendule/Pendule_copie/sensor.o /home/rtai/Pendule/Pendule_copie/sensor.mod.o

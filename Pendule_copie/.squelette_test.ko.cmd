@@ -1,0 +1,1 @@
+cmd_/home/rtai/Pendule/Pendule_copie/squelette_test.ko := ld -m elf_i386 -m elf_i386 -r -o /home/rtai/Pendule/Pendule_copie/squelette_test.ko /home/rtai/Pendule/Pendule_copie/squelette_test.o /home/rtai/Pendule/Pendule_copie/squelette_test.mod.o

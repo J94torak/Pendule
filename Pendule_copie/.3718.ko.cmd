@@ -1,0 +1,1 @@
+cmd_/home/rtai/Pendule/Pendule_copie/3718.ko := ld -m elf_i386 -m elf_i386 -r -o /home/rtai/Pendule/Pendule_copie/3718.ko /home/rtai/Pendule/Pendule_copie/3718.o /home/rtai/Pendule/Pendule_copie/3718.mod.o
