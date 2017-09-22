@@ -12,7 +12,7 @@
 #define RANGE BASE  + 1
 #define MUX BASE + 2
 #define W0 BASE  + 3
-#define STATUS BASE  + 8
+#define STATUS2 BASE  + 8
 #define CONTROLE BASE  + 9
 #define COUNT_EN BASE + 10
 #define W1 BASE + 11
@@ -35,7 +35,7 @@ int SetChanel(unsigned char);
 int ADRangeSelect(unsigned char,unsigned char);
 u16 ReadAD(void);
 u8 ReadChannel(void);
-u16 valueToVoltagePolar(int vRef, int value);
-u16 valueToVoltageUniPolar(int vRef, int value);
+double valueToVoltagePolar(int vRef, int value);
+double valueToVoltageUniPolar(int vRef, int value);
 
 #endif

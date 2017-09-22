@@ -1,4 +1,4 @@
-obj-m	   := 3718.o 3712.o SJA1000.o controller.o sensor.o pendule1.o pendule2.0
+obj-m	   := 3718.o 3712.o SJA1000.o controller.o sensor.o pendule1.o pendule2.o
 
 PATH := /opt/x86_64/gcc/gcc-3.4.4/bin:$(PATH)
 KIT1 = arcom12.esiee.fr

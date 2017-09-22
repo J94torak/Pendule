@@ -57,7 +57,7 @@ send(0x20,4,&envoie);
 
 void actuator_pendule2(long arg){
 
-double angle=valueToVoltagePolar(5, angle_pendule2);
+//double angle=valueToVoltagePolar(5, angle_pendule2);
 double position=valueToVoltagePolar(10, position_pendule2);
 double commande=valueToVoltagePolar(10, commande_pendule2);
 printk("Commande = %dmv\n", (int)(commande*1000.0));

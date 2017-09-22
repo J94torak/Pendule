@@ -33,17 +33,17 @@ return 0;
 
 
 u16 ReadAD(void){
-while((inb(STATUS)&0x80)!=0x00);
+while((inb(STATUS2)&0x80)!=0x00);
 outb(0xFF,R0);
-while((inb(STATUS)&0x90)!=0x10);
+while((inb(STATUS2)&0x90)!=0x10);
 return (u16)((inb(R0)>>4)|(inb(R1)<<4));
 }
 
 
 u8 ReadChannel(void){
-while((inb(STATUS)&0x80)!=0x00);
+while((inb(STATUS2)&0x80)!=0x00);
 outb(0xFF,R0);
-while((inb(STATUS)&0x90)!=0x10);
+while((inb(STATUS2)&0x90)!=0x10);
 printk("Channel=%d\n",((int)(inb(R0)&(0x0F))));
 return (u8)(inb(R0)&(0x0F));
 }
