@@ -25,11 +25,11 @@ void init_control(double pposition0,double pposition85, double pangle_15, double
 	position85=pposition85;
 	angle_15=pangle_15;
 	angle15=pangle15;
-	pasPosition=(position0-position85)/90.5 ;   //Volt/cm
+	pasPosition=(position0-position85)/90.5;   //Volt/cm
   pasAngle= (angle_15-angle15)/30.0;          //volt/degre
 
-
 }
+
 
 
 double commande(double angle, double position){

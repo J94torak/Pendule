@@ -1,6 +1,5 @@
-
 #include "sensor.h"
-
+MODULE_LICENSE("GPL");
 int initsensor(){
 		ADRangeSelect(0x00,RANGE_5);
     ADRangeSelect(0x01,RANGE_10);

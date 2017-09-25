@@ -1,4 +1,3 @@
-
 #include<linux/init.h>
 #include<linux/module.h>
 #include <asm/io.h>
@@ -32,7 +31,10 @@ MODULE_LICENSE("GPL");
 #define PRIORITE4 4
 
 /* RT_TASK */
-static RT_TASK acquisition,control,actuator,lecture;
+static RT_TASK acquisition;
+static RT_TASK control;
+static RT_TASK actuator;
+static RT_TASK lecture;
 
 u16 angle_pendule1;
 u16 position_pendule1;
@@ -43,20 +45,27 @@ u16 position_pendule2;
 u16 commande_pendule2;
 
 void control_pendule2(long arg){
+while(1){
 commande_pendule2=(u16) VoltageToValue(commande(valueToVoltagePolar(5, angle_pendule2),valueToVoltagePolar(10, position_pendule2)));
 send(0x22,2,&commande_pendule2);
+printk("commande pendule 2 envoyé: %d\n",(int) commande_pendule2 );
+
+rt_task_suspend (&control);
+}
 }
 
 void acquisition_pendule1(long arg){
 u16 envoie[2];
+while(1){
 envoie[0] = acquisition_angle();
 envoie[1] = acquisition_position();
 send(0x10,4,&envoie);
-
+rt_task_wait_period();
+}
 }
 
 void actuator_pendule1(long arg){
-
+while(1){
 //double angle=valueToVoltagePolar(5, angle_pendule1);
 double position=valueToVoltagePolar(10, position_pendule1);
 double commande=valueToVoltagePolar(10, commande_pendule1);
@@ -68,6 +77,8 @@ printk("Commande = %dmv\n", (int)(commande*1000.0));
 			printk("Position NOK \n");
 			SetDAVol(0,0.0);
 			}
+rt_task_suspend (&actuator);
+}
 
 }
 
@@ -76,16 +87,26 @@ void lecture_can(long arg){
     u16 adress[2];
     int id=0;
     int dlc=0;
+while(1){
     receive(&adress, &id,&dlc);
+    printk("id= %d\n",id);
+    printk("dlc= %d\n",dlc);
+ 
     if(id==0x12 && dlc==2){
         commande_pendule1=adress[0];
+        printk("commande adress 0 = %d\n",adress[0]);
         rt_task_resume(&actuator);//rtask_resume actuator
     }
     if(id==0x20 && dlc==4){
         angle_pendule2=adress[0];
+        printk("angle adress 0 = %d\n",adress[0]);
         position_pendule2=adress[1];
+        printk("pos adress 1 = %d\n",adress[1]);
         rt_task_resume(&control);//rtask_resume control
     }
+rt_task_wait_period();
+
+}
 
 
 }
@@ -99,9 +120,8 @@ static int pendule1_init(void) {
 
 
     /* creation tache périodiques*/
-  
+  //init_control(double pposition0,double pposition85, double pangle_15, double pangle15);
   rt_set_oneshot_mode();
-    
   ierr_1 = rt_task_init(&acquisition,acquisition_pendule1,0,STACK_SIZE, PRIORITE2, 0, 0);
   ierr_2 = rt_task_init(&lecture,lecture_can,0,STACK_SIZE, PRIORITE1, 0, 0);
   ierr_3 = rt_task_init(&control,control_pendule2,0,STACK_SIZE, PRIORITE3, 1, 0);
@@ -123,6 +143,8 @@ static void pendule1_exit(void) {
  stop_rt_timer(); 
  rt_task_delete(&acquisition);
 rt_task_delete(&lecture);
+ rt_task_delete(&control);
+rt_task_delete(&actuator);
 
 }
 
