@@ -8,26 +8,28 @@ double x3;
 double x4;
 
 double position0;
-double position85;
+double position90;
 double angle_15;
 double angle15;
+double origin;
 
 double pasPosition;
 double pasAngle;
 
-void init_control(double pposition0,double pposition85, double pangle_15, double pangle15){
+
+void init_control(double pposition0,double pposition90, double pangle_15, double pangle15){
 
  	x1=0;
  	x2=0;
  	x3=0;
  	x4=0;
 	position0=pposition0;
-	position85=pposition85;
+	position90=pposition90;
 	angle_15=pangle_15;
 	angle15=pangle15;
-	pasPosition=(position0-position85)/90.5;   //Volt/cm
+	pasPosition=(position0-position90)/90.5;   //Volt/cm
   pasAngle= (angle_15-angle15)/30.0;          //volt/degre
-
+    
 }
 
 

@@ -31,6 +31,7 @@ MODULE_LICENSE("GPL");
 #define PRIORITE4 4
 
 /* RT_TASK */
+static RT_TASK calibration;
 static RT_TASK acquisition;
 static RT_TASK control;
 static RT_TASK actuator;
@@ -43,6 +44,96 @@ u16 commande_pendule1;
 u16 angle_pendule2;
 u16 position_pendule2;
 u16 commande_pendule2;
+
+
+u16 origin_;
+u16 position0_;
+u16 position90_;
+u16 angle0_;
+u16 angle30_;
+
+void calibration_pendule(long arg){
+int i=0;
+u16 current_position;
+u16 previous_position;
+u16 angle_tempo;
+SetDAVol(0,0.0);
+rt_task_wait_period();
+origin_=acquisition_position();
+rt_task_wait_period();
+printk("origin_=%d\n",origin_);
+current_position=0;
+previous_position=4095;
+
+SetDAVol(0,5.0);
+rt_task_wait_period();
+SetDAVol(0,5.0);
+rt_task_wait_period();
+
+while(current_position!=previous_position){
+SetDAVol(0,0.8);
+previous_position=current_position;
+current_position=acquisition_position();
+rt_task_wait_period();
+}
+
+position90_=current_position;
+printk("position90_=%d\n",position90_);
+current_position=0;
+previous_position=4095;
+
+SetDAVol(0,-5.0);
+rt_task_wait_period();
+SetDAVol(0,-5.0);
+rt_task_wait_period();
+
+while(current_position!=previous_position){
+SetDAVol(0,-0.8);
+previous_position=current_position;
+current_position=acquisition_position();
+rt_task_wait_period();
+}
+
+position0_=current_position;
+printk("position0_=%d\n",position0_);
+SetDAVol(0,0.0);
+rt_task_wait_period();
+
+printk("origin_=%d\nposition0_=%d\nposition90_=%d\n",origin_,position0_,position90_);
+/*now = rt_get_time();
+rt_task_make_periodic(&acquisition, now, nano2count(PERIODE_CONTROL));
+rt_task_make_periodic(&lecture, now, nano2count(PERIODE_CONTROL2));*/
+angle0_=acquisition_angle();
+do{	
+i=0;
+while(i<30){
+		
+			SetDAVol(0,5.0);
+		
+		i++;
+		rt_task_wait_period();
+		
+	}
+i=0;
+SetDAVol(0,-2.5);
+while(i<30){
+		
+			SetDAVol(0,-2.5);
+		
+		i++;
+		rt_task_wait_period();
+		
+	}
+SetDAVol(0,0.0);
+angle_tempo=acquisition_angle();
+rt_task_wait_period();}while(angle_tempo<angle0_+30||angle_tempo>angle0_-30);
+angle30_=angle_tempo;
+
+
+printk("origin_=%d\nposition0_=%d\nposition90_=%d\nangle0_=%d\nangle30_=%d\n",origin_,position0_,position90_,angle0_,angle30_);
+
+
+}
 
 void control_pendule2(long arg){
 while(1){
@@ -115,24 +206,27 @@ rt_task_wait_period();
 
 static int pendule1_init(void) {
 
-  int ierr_1,ierr_2,ierr_3,ierr_4;
+  int ierr_1,ierr_2,ierr_3,ierr_4,ierr_5;
   RTIME now;
 
 
     /* creation tache périodiques*/
   //init_control(double pposition0,double pposition85, double pangle_15, double pangle15);
   rt_set_oneshot_mode();
-  ierr_1 = rt_task_init(&acquisition,acquisition_pendule1,0,STACK_SIZE, PRIORITE2, 0, 0);
+  /*ierr_1 = rt_task_init(&acquisition,acquisition_pendule1,0,STACK_SIZE, PRIORITE2, 0, 0);
   ierr_2 = rt_task_init(&lecture,lecture_can,0,STACK_SIZE, PRIORITE1, 0, 0);
   ierr_3 = rt_task_init(&control,control_pendule2,0,STACK_SIZE, PRIORITE3, 1, 0);
-  ierr_4 = rt_task_init(&actuator,actuator_pendule1,0,STACK_SIZE, PRIORITE4, 1, 0);
+  ierr_4 = rt_task_init(&actuator,actuator_pendule1,0,STACK_SIZE, PRIORITE4, 1, 0);*/
+  ierr_5 = rt_task_init(&calibration,calibration_pendule,0,STACK_SIZE, PRIORITE1, 1, 0);
 
 
 
   start_rt_timer(nano2count(TICK_PERIOD));
   now = rt_get_time();
+  rt_task_make_periodic(&calibration, now, nano2count(PERIODE_CONTROL));
+/*
   rt_task_make_periodic(&acquisition, now, nano2count(PERIODE_CONTROL));
-  rt_task_make_periodic(&lecture, now, nano2count(PERIODE_CONTROL2));
+  rt_task_make_periodic(&lecture, now, nano2count(PERIODE_CONTROL2));*/
 
  
  
@@ -145,6 +239,7 @@ static void pendule1_exit(void) {
 rt_task_delete(&lecture);
  rt_task_delete(&control);
 rt_task_delete(&actuator);
+rt_task_delete(&calibration);
 
 }
 

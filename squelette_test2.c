@@ -114,6 +114,33 @@ void test4(long arg){
 
 }
 
+void test5(long arg){
+
+int i=0;
+	
+	while(i<30){
+		
+			SetDAVol(0,9.0);
+		
+		i++;
+		rt_task_wait_period();
+		
+	}
+i=0;
+SetDAVol(0,-4.0);
+while(i<30){
+		
+			SetDAVol(0,-4.0);
+		
+		i++;
+		rt_task_wait_period();
+		
+	}
+SetDAVol(0,0.0);
+rt_task_wait_period();
+
+}
+
 static int test_init(void) {
 
   int ierr;
@@ -124,7 +151,7 @@ static int test_init(void) {
   
   rt_set_oneshot_mode();
     
-   ierr = rt_task_init(&tache_horloge,test4,0,STACK_SIZE, PRIORITE, 1, 0);  
+   ierr = rt_task_init(&tache_horloge,test5,0,STACK_SIZE, PRIORITE, 1, 0);  
   start_rt_timer(nano2count(TICK_PERIOD));
   now = rt_get_time();
   rt_task_make_periodic(&tache_horloge, now, nano2count(PERIODE_CONTROL));

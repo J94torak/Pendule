@@ -5,10 +5,14 @@
 #include<linux/module.h>
 #include<linux/init.h>
 #include "3718.h"
+#include "3712.h"
 void   init_control(double pposition0,double pposition85, double pangle_15, double pangle15);
 double commande(double position, double angle);
 double conversionVoltToAngle(double angle);
 double conversionVoltToPosition(double position);
 double commandeVoltage(double angle, double position);
+
+
+
 
 #endif

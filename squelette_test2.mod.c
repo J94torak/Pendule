@@ -16,5 +16,5 @@ __attribute__((section(".gnu.linkonce.this_module"))) = {
 static const char __module_depends[]
 __attribute_used__
 __attribute__((section(".modinfo"))) =
-"depends=SJA1000,3712,controller,3718,sensor";
+"depends=controller,sensor,3712,3718";
 
