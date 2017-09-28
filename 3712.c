@@ -12,6 +12,11 @@ outb(0x80,PCM3712_OUT);
 return 0;
 }
 
+int exit3712(void){
+outb(0x00,PCM3712_OUT);
+return 0;
+}
+
 void SetDA(unsigned char channel,int value){
 int q=value/256;
 int r=value%256;
@@ -56,7 +61,8 @@ static int init_3712(void) {
 
 
 static void exit_3712(void) {
-
+exit3712();
+return 0;
 }
 
 
