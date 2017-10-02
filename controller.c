@@ -18,9 +18,10 @@ double pasAngle;
 double origin;
 double angle0;
 
-int output_fd;    /* Input and output file descriptors */
-ssize_t  ret_out;    /* Number of bytes returned by read() and write() */
-char buffer[100];      /* Character buffer */
+char angle_buff[30];
+char position_buff[30];
+char commande_buff[30];
+
 
 void init_control(double pposition0,double pposition90,double porigin, double pangle_15, double pangle15, double pangle0){
 
@@ -48,7 +49,7 @@ double commande(double angle, double position){
 	double x3k;
 	double x4k;
 	double commande;
-
+	int status=-1;
 	
 	x1k=x1;
 	x2k=x2;
@@ -62,14 +63,23 @@ double commande(double angle, double position){
 
 	commande= -(-80.3092*x1-9.6237*x2-14.1215*x3-23.6260*x4);	
 
-  /*
-     ret_out = write (output_fd, &buffer, (ssize_t) ret_in);
-            if(ret_out != ret_in){
-                ///Write error 
-                perror("write");
-                return 4;
-            }*/
-    return commande;
+	status = rtf_put(0,angle_buff,30);
+	if(status!=30){
+		printk("[ERROR] angle block not written \n");
+	}
+		
+	status = rtf_put(1,position_buff,30);
+	if(status!=30){
+		printk("[ERROR] Position block not written\n");
+	}
+	
+	status = rtf_put(2,commande_buff,30); 
+	if(status!=30){
+		printk("[ERROR] Commande block not written\n");
+	}
+    
+    
+  return commande;
    
 
 }
@@ -97,18 +107,29 @@ return commande(conversionVoltToAngle(angle),conversionVoltToPosition(position))
 
 
 static int init_controller(void) {
-  output_fd = open("bigbrother.txt", O_CREAT, 0644);
-    if(output_fd == -1){
-        printk("[ERROR] Impossible to open bigbrother.txt\n");
+int angle_fd;  
+int position_fd;
+int commande_fd;
+angle_fd=rtf_create(0,100);  	
+position_fd=rtf_create(1,100);  
+commande_fd=rtf_create(2,100);   
+    if(angle_fd != 0){
+        printk("[ERROR] Impossible create angle descriptor\n");
         }
-  init_control(POSITION0,POSITION90, ORIGIN, ANGLE_15,ANGLE15,ANGLE0);
+            if(position_fd != 0){
+        printk("[ERROR] Impossible create angle descriptor\n");
+        }
+            if(commande_fd != 0){
+        printk("[ERROR] Impossible create angle descriptor\n");
+        }
+  init_control(POSITION0, POSITION90,ORIGIN, ANGLE_15,ANGLE15,ANGLE0);
   return 0;
 }
 
 
 
 static void exit_controller(void) {
- close (output_fd);
+
 }
 
 module_init(init_controller);

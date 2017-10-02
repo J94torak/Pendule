@@ -4,15 +4,16 @@
 #include <asm/irq.h>
 #include<linux/module.h>
 #include<linux/init.h>
+#include <rtai_fifos.h>
 #include "3718.h"
 #include "3712.h"
 
-#define POSITION0
-#define POSITION90
-#define ORIGIN
-#define ANGLE_15
-#define ANGLE15
-#define ANGLE0
+#define POSITION0 0
+#define POSITION90 0
+#define ORIGIN 0 
+#define ANGLE_15 0 
+#define ANGLE15 0
+#define ANGLE0 0
 #define ANGLE_WIDTH 30.0
 #define POSITION_WIDTH 90.5
 void   init_control(double pposition0,double pposition90,double porigin, double pangle_15, double pangle15, double pangle0);
