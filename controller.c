@@ -18,9 +18,6 @@ double pasAngle;
 double origin;
 double angle0;
 
-char angle_buff[30];
-char position_buff[30];
-char commande_buff[30];
 
 
 void init_control(double pposition0,double pposition90,double porigin, double pangle_15, double pangle15, double pangle0){
@@ -49,7 +46,7 @@ double commande(double angle, double position){
 	double x3k;
 	double x4k;
 	double commande;
-	int status=-1;
+
 	
 	x1k=x1;
 	x2k=x2;
@@ -63,21 +60,7 @@ double commande(double angle, double position){
 
 	commande= -(-80.3092*x1-9.6237*x2-14.1215*x3-23.6260*x4);	
 
-	status = rtf_put(0,angle_buff,30);
-	if(status!=30){
-		printk("[ERROR] angle block not written \n");
-	}
-		
-	status = rtf_put(1,position_buff,30);
-	if(status!=30){
-		printk("[ERROR] Position block not written\n");
-	}
-	
-	status = rtf_put(2,commande_buff,30); 
-	if(status!=30){
-		printk("[ERROR] Commande block not written\n");
-	}
-    
+
     
   return commande;
    
@@ -86,9 +69,8 @@ double commande(double angle, double position){
 
 
 double conversionVoltToAngle(double angle){
-		
 		double angle_converti=0;
-		angle_converti= (angle-angle0)/pasAngle*3.14/180.0;
+		angle_converti= (angle-angle0)/pasAngle*3.14/180.0;	
 		printk("angle_converti = %d radians\n",(int)(angle_converti*1000));
 		return angle_converti;
 }

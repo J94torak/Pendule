@@ -52,88 +52,11 @@ u16 position90_;
 u16 angle0_;
 u16 angle30_;
 
-void calibration_pendule(long arg){
-int i=0;
-u16 current_position;
-u16 previous_position;
-u16 angle_tempo;
-SetDAVol(0,0.0);
-rt_task_wait_period();
-origin_=acquisition_position();
-rt_task_wait_period();
-printk("origin_=%d\n",origin_);
-current_position=0;
-previous_position=4095;
-
-SetDAVol(0,5.0);
-rt_task_wait_period();
-SetDAVol(0,5.0);
-rt_task_wait_period();
-
-while(current_position!=previous_position){
-SetDAVol(0,0.8);
-previous_position=current_position;
-current_position=acquisition_position();
-rt_task_wait_period();
-}
-
-position90_=current_position;
-printk("position90_=%d\n",position90_);
-current_position=0;
-previous_position=4095;
-
-SetDAVol(0,-5.0);
-rt_task_wait_period();
-SetDAVol(0,-5.0);
-rt_task_wait_period();
-
-while(current_position!=previous_position){
-SetDAVol(0,-0.8);
-previous_position=current_position;
-current_position=acquisition_position();
-rt_task_wait_period();
-}
-
-position0_=current_position;
-printk("position0_=%d\n",position0_);
-SetDAVol(0,0.0);
-rt_task_wait_period();
-
-printk("origin_=%d\nposition0_=%d\nposition90_=%d\n",origin_,position0_,position90_);
-/*now = rt_get_time();
-rt_task_make_periodic(&acquisition, now, nano2count(PERIODE_CONTROL));
-rt_task_make_periodic(&lecture, now, nano2count(PERIODE_CONTROL2));*/
-angle0_=acquisition_angle();
-do{	
-i=0;
-while(i<30){
-		
-			SetDAVol(0,5.0);
-		
-		i++;
-		rt_task_wait_period();
-		
-	}
-i=0;
-SetDAVol(0,-2.5);
-while(i<30){
-		
-			SetDAVol(0,-2.5);
-		
-		i++;
-		rt_task_wait_period();
-		
-	}
-SetDAVol(0,0.0);
-angle_tempo=acquisition_angle();
-rt_task_wait_period();}while(angle_tempo<angle0_+30||angle_tempo>angle0_-30);
-angle30_=angle_tempo;
+u16 angle_buff[2];
+u16 position_buff[2];
+u16 commande_buff[2];
 
 
-printk("origin_=%d\nposition0_=%d\nposition90_=%d\nangle0_=%d\nangle30_=%d\n",origin_,position0_,position90_,angle0_,angle30_);
-
-
-}
 
 void control_pendule2(long arg){
 while(1){
@@ -147,10 +70,33 @@ rt_task_suspend (&control);
 
 void acquisition_pendule1(long arg){
 u16 envoie[2];
+u16 now;
+int status;
 while(1){
-envoie[0] = acquisition_angle();
-envoie[1] = acquisition_position();
-send(0x10,4,&envoie);
+angle_pendule1 = acquisition_angle();
+position_pendule1 = acquisition_position();
+envoie[0] = angle_pendule1;
+envoie[1] = position_pendule1;
+
+	send(0x10,4,&envoie);
+	now=(u16)rt_get_time_ns();
+	angle_buff[0] = now;
+	angle_buff[1] = angle_pendule1;
+	position_buff[0] = now;
+	position_buff[1] = position_pendule1;
+ 	status=-1;
+	do{
+		status = rtf_put(0,angle_buff,2);
+	}while(status!=2);
+	status=-1;
+	do{
+		status = rtf_put(1,position_buff,2);
+	}while(status!=2);
+	
+
+
+
+
 rt_task_wait_period();
 }
 }
@@ -168,6 +114,11 @@ printk("Commande = %dmv\n", (int)(commande*1000.0));
 			printk("Position NOK \n");
 			SetDAVol(0,0.0);
 			}
+			
+			
+			
+			
+			
 rt_task_suspend (&actuator);
 }
 
@@ -178,13 +129,21 @@ void lecture_can(long arg){
     u16 adress[2];
     int id=0;
     int dlc=0;
+    int status=-1;
 while(1){
     receive(&adress, &id,&dlc);
     printk("id= %d\n",id);
     printk("dlc= %d\n",dlc);
- 
+ 		
     if(id==0x12 && dlc==2){
         commande_pendule1=adress[0];
+        commande_buff[0]=(u16)rt_get_time_ns();
+        commande_buff[1]=commande_pendule1;
+        status=-1;
+       do{
+        	status = rtf_put(2,commande_buff,2); 
+			}while (status!=2);
+			}
         printk("commande adress 0 = %d\n",adress[0]);
         rt_task_resume(&actuator);//rtask_resume actuator
     }
@@ -200,15 +159,31 @@ rt_task_wait_period();
 }
 
 
-}
-
 
 
 static int pendule1_init(void) {
 
-  int ierr_1,ierr_2,ierr_3,ierr_4,ierr_5;
-  RTIME now;
-
+  int ierr_1,ierr_2,ierr_3,ierr_4;
+	int angle_fd;  
+	int position_fd;
+	int commande_fd;
+	RTIME now;
+	
+	angle_fd=rtf_create(0,100);  	
+	position_fd=rtf_create(1,100);  
+	commande_fd=rtf_create(2,100);   
+    if(angle_fd != 0){
+        printk("[ERROR] Impossible create angle descriptor\n");
+        }
+            if(position_fd != 0){
+        printk("[ERROR] Impossible create angle descriptor\n");
+        }
+            if(commande_fd != 0){
+        printk("[ERROR] Impossible create angle descriptor\n");
+        }
+	
+	  
+	
 
     /* creation tache périodiques*/
   //init_control(double pposition0,double pposition85, double pangle_15, double pangle15);
@@ -217,7 +192,7 @@ static int pendule1_init(void) {
   ierr_2 = rt_task_init(&lecture,lecture_can,0,STACK_SIZE, PRIORITE1, 0, 0);
   ierr_3 = rt_task_init(&control,control_pendule2,0,STACK_SIZE, PRIORITE3, 1, 0);
   ierr_4 = rt_task_init(&actuator,actuator_pendule1,0,STACK_SIZE, PRIORITE4, 1, 0);*/
-  ierr_5 = rt_task_init(&calibration,calibration_pendule,0,STACK_SIZE, PRIORITE1, 1, 0);
+  
 
 
 
