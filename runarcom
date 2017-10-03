@@ -9,12 +9,15 @@ EOF
 read junk
 sudo insmod /usr/realtime/modules/rtai_hal.ko
 sudo insmod /usr/realtime/modules/rtai_sched.ko
+sudo insmod /usr/realtime/modules/rtai_sched.ko
+sudo insmod /usr/realtime/modules/rtai_fifos.ko 
 sudo insmod 3718.ko
 sudo insmod 3712.ko
 sudo insmod sensor.ko
 sudo insmod controller.ko
 sudo insmod SJA1000.ko
 sudo insmod $1.ko
+
 
 lsmod
 echo "Le programme fontionne"
@@ -27,5 +30,6 @@ sudo rmmod controller
 sudo rmmod sensor
 sudo rmmod 3712
 sudo rmmod 3718
+sudo rmmod rtai_fifos
 sudo rmmod rtai_sched
 sudo rmmod rtai_hal

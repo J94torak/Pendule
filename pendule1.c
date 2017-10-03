@@ -5,7 +5,7 @@
 #include <rtai.h>
 #include <rtai_sched.h>
 #include <rtai_fifos.h>
-
+#include <rtai_fifos.h>
 #include"3718.h"
 #include"3712.h"
 #include "controller.h"
@@ -214,7 +214,6 @@ static void pendule1_exit(void) {
 rt_task_delete(&lecture);
  rt_task_delete(&control);
 rt_task_delete(&actuator);
-rt_task_delete(&calibration);
 
 }
 
