@@ -21,8 +21,8 @@
 
 int init3712(void);
 void SetDA(unsigned char channel,int value);
-int SetDAVol(unsigned char channel,double voltage);
-int VoltageToValue(double voltage);
+int SetDAVol(unsigned char channel,float voltage);
+int VoltageToValue(float voltage);
 
 #endif
 

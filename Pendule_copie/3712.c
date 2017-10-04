@@ -28,13 +28,13 @@ outb(0xFF,PCM3712_SYNC);
 
 }
 
-int VoltageToValue(double voltage){
+int VoltageToValue(float voltage){
 
 return (int)(voltage/10.0*2048.0+2048.0);
 }
 
 
-int SetDAVol(unsigned char channel,double voltage){
+int SetDAVol(unsigned char channel,float voltage){
 
 
 int value=0;

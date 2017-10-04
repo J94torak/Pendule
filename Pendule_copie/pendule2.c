@@ -52,8 +52,8 @@ void actuator_pendule2(long arg){
 
 void test3(long arg){
 
-	double angleV=0,positionV=0;
-	double commande=0;
+	float angleV=0,positionV=0;
+	float commande=0;
 	
 	while(1){
 		

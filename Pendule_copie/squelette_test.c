@@ -74,8 +74,8 @@ void test2(long arg){
 
 void test3(long arg){
 
-	double angleV=0,positionV=0;
-	double commande=0;
+	float angleV=0,positionV=0;
+	float commande=0;
 	
 	while(1){
 		
@@ -85,12 +85,8 @@ void test3(long arg){
 		printk("angleV=%dmv\n",(int)(angleV*1000.0)); 
 		commande  = commandeVoltage(angleV,positionV);
 		printk("Commande = %dmv\n", (int)(commande*1000.0));
-		if(((int)(positionV*1000.0))<8000&&((int)(positionV*1000.0))>-5600&&((int)(commande*1000.0))>-10000&&((int)(commande*1000.0))<10000)
-			SetDAVol(0,commande);
-		else{
-			printk("Position NOK \n");
-			SetDAVol(0,0.0);
-			}
+		SetDAVol(0,commande);
+		
 		
 		rt_task_wait_period();
 		
@@ -121,7 +117,7 @@ static int test_init(void) {
 
 static void test_exit(void) {
  stop_rt_timer(); 
- rt_task_delete(&tache_horloge);
+ //rt_task_delete(&tache_horloge);
 
 }
 
