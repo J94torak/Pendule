@@ -38,10 +38,11 @@ int SetDAVol(unsigned char channel,float voltage){
 
 
 int value=0;
-printk("In function SetDAVol");
+printk("In function SetDAVol\n");
 /*if(voltage<-10.0||voltage>10.0)
 printk("Exit");
 return -1;*/
+printk("Commande input SetDAVol:%d \n",(int) (voltage*1000.0));
 value=VoltageToValue(voltage);
 printk("Value=%d\n",value);
 SetDA(channel,value);

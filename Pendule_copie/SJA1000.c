@@ -5,7 +5,7 @@ void send(int id, int dlc, void* adress){
    	int i=0;
     u8 message[8];
     u8 idt1, idt2,lecture;
-	lecture=inb(STATUS);
+	lecture=inb(STATUS_SJA);
 	
 	if(((lecture&0x04)==0x04)&&id<4096&&dlc<9){
 		idt2=id&0x003;
@@ -34,7 +34,7 @@ void receive(void* adress, int* id,int* dlc){
     u8 idt1,idt2,lecture;
 	u8 message[8];
 	int i=0;
-    lecture=inb(STATUS);
+    lecture=inb(STATUS_SJA);
 	if((lecture&0x01)==0x01){
 		idt1=inb(IDR1);
 		idt2=inb(IDR2);

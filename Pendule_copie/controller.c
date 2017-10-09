@@ -66,7 +66,7 @@ float commande(float angle, float position){
 	x4=-2.4476*x1k+0.0016*x2k-0.1546*x3k+0.7222*x4k+1.6173*angle-0.1150*position;*/
 	
 	//commande= (-80.3092*x1-9.6237*x2-14.1215*x3-23.6260*x4);
-	commande= (-104.7570*x1 -15.8810*x2 -20.5358*x3 -30.5773*x4)/3.0;	
+	commande= (-104.7570*x1 -15.8810*x2 -20.5358*x3 -30.5773*x4);	
 
 
     
