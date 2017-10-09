@@ -33,10 +33,13 @@ return 0;
 
 
 u16 ReadAD(void){
+u16 value;
 while((inb(STATUS)&0x80)!=0x00);
 outb(0xFF,R0);
 while((inb(STATUS)&0x90)!=0x10);
-return (u16)((inb(R0)>>4)|(inb(R1)<<4));
+value=(u16)((inb(R0)>>4)|(inb(R1)<<4));
+outb(0x00,STATUS);
+return value;
 }
 
 

@@ -18,7 +18,7 @@ MODULE_LICENSE("GPL");
 
 /* define pour tache periodique */
 #define STACK_SIZE  2000
-#define TICK_PERIOD 1000000    //  1 ms
+#define TICK_PERIOD 1000    //  1 ms
 #define PERIODE_CONTROL 10000000 //10ms
 #define N_BOUCLE 10000000
 #define NUMERO 1
@@ -85,7 +85,7 @@ void test3(long arg){
 		printk("angleV=%dmv\n",(int)(angleV*1000.0)); 
 		commande  = commandeVoltage(angleV,positionV);
 		printk("Commande = %dmv\n", (int)(commande*1000.0));
-		SetDAVol(0,commande);
+		SetDAVol(0,3*commande);
 		
 		
 		rt_task_wait_period();
@@ -125,4 +125,3 @@ static void test_exit(void) {
 
 module_init(test_init);
 module_exit(test_exit);
-

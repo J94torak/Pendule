@@ -11,11 +11,15 @@ int initsensor(){
 
 float acquisition_angle(){
 int voltage=0;
-
+int i=0;
 	if(SetChanel(0x00)!=0x00)
       printk("Angle:OK\n");
   else
       printk("Angle:NOK\n");
+while (i<2000){
+i++;
+
+}      
     voltage = ReadAD();
     //printk("angle channel 0=%d\n",(unsigned int)voltage);
 return	valueToVoltagePolar(5, voltage);
@@ -24,10 +28,15 @@ return	valueToVoltagePolar(5, voltage);
 
 float acquisition_position(){
 int voltage=0;
+int i=0;
 		if(SetChanel(0x01)!=0x00)
       printk("Position:OK\n");
   else
       printk("Position:NOK\n");
+while (i<2000){
+i++;
+
+}  
     voltage = ReadAD();
     //printk("Position channel 1=%d\n",(unsigned int)voltage);
 return valueToVoltagePolar(10, voltage);    
