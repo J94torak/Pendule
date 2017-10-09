@@ -19,7 +19,7 @@ MODULE_LICENSE("GPL");
 #define STACK_SIZE  2000
 #define TICK_PERIOD 1000000    //  1 ms
 #define PERIODE_CONTROL 10000000 //10ms
-#define PERIODE_CONTROL2 5000000 //5ms
+#define PERIODE_CONTROL2 10000000 //5ms
 #define N_BOUCLE 10000000
 #define NUMERO1 1
 #define NUMERO2 2
@@ -31,7 +31,7 @@ MODULE_LICENSE("GPL");
 #define PRIORITE4 4
 
 /* RT_TASK */
-static RT_TASK calibration;
+//static RT_TASK calibration;
 static RT_TASK acquisition;
 static RT_TASK control;
 static RT_TASK actuator;
@@ -52,9 +52,9 @@ u16 position90_;
 u16 angle0_;
 u16 angle30_;
 
-u16 angle_buff[2];
+/*u16 angle_buff[2];
 u16 position_buff[2];
-u16 commande_buff[2];
+u16 commande_buff[2];*/
 
 
 
@@ -70,8 +70,8 @@ rt_task_suspend (&control);
 
 void acquisition_pendule1(long arg){
 u16 envoie[2];
-u16 now;
-int status;
+//u16 now;
+//int status;
 while(1){
 angle_pendule1 = acquisition_angle();
 position_pendule1 = acquisition_position();
@@ -79,7 +79,7 @@ envoie[0] = angle_pendule1;
 envoie[1] = position_pendule1;
 
 	send(0x10,4,&envoie);
-	now=(u16)rt_get_time_ns();
+	/*now=(u16)rt_get_time_ns();
 	angle_buff[0] = now;
 	angle_buff[1] = angle_pendule1;
 	position_buff[0] = now;
@@ -91,7 +91,7 @@ envoie[1] = position_pendule1;
 	status=-1;
 	do{
 		status = rtf_put(1,position_buff,2);
-	}while(status!=2);
+	}while(status!=2);*/
 	
 
 
@@ -103,22 +103,11 @@ rt_task_wait_period();
 
 void actuator_pendule1(long arg){
 while(1){
-//double angle=valueToVoltagePolar(5, angle_pendule1);
-double position=valueToVoltagePolar(10, position_pendule1);
-double commande=valueToVoltagePolar(10, commande_pendule1);
-printk("Commande = %dmv\n", (int)(commande*1000.0));
 
-		if(((int)(position*1000.0))<8000&&((int)(position*1000.0))>-5600&&((int)(commande*1000.0))>-10000&&((int)(commande*1000.0))<10000)
-			SetDA(0,commande_pendule1);
-		else{
-			printk("Position NOK \n");
-			SetDAVol(0,0.0);
-			}
-			
-			
-			
-			
-			
+float commande=valueToVoltagePolar(10, commande_pendule1);
+printk("Commande = %dmv\n", (int)(commande*1000.0));
+SetDAVol(0,0.75*commande);
+	
 rt_task_suspend (&actuator);
 }
 
@@ -129,7 +118,7 @@ void lecture_can(long arg){
     u16 adress[2];
     int id=0;
     int dlc=0;
-    int status=-1;
+    //int status=-1;
 while(1){
     receive(&adress, &id,&dlc);
     printk("id= %d\n",id);
@@ -137,14 +126,14 @@ while(1){
  		
     if(id==0x12 && dlc==2){
         commande_pendule1=adress[0];
-        commande_buff[0]=(u16)rt_get_time_ns();
+        /*commande_buff[0]=(u16)rt_get_time_ns();
         commande_buff[1]=commande_pendule1;
         status=-1;
        do{
         	status = rtf_put(2,commande_buff,2); 
 			}while (status!=2);
-			}
-        printk("commande adress 0 = %d\n",adress[0]);
+			*/
+        printk("commande adress 0 = %d\n",commande_pendule1);
         rt_task_resume(&actuator);//rtask_resume actuator
     }
     if(id==0x20 && dlc==4){
@@ -158,16 +147,17 @@ rt_task_wait_period();
 
 }
 
-
+}
 
 
 static int pendule1_init(void) {
 
   int ierr_1,ierr_2,ierr_3,ierr_4;
-	int angle_fd;  
+  RTIME now;
+/*	int angle_fd;  
 	int position_fd;
 	int commande_fd;
-	RTIME now;
+	
 	
 	angle_fd=rtf_create(0,100);  	
 	position_fd=rtf_create(1,100);  
@@ -180,28 +170,27 @@ static int pendule1_init(void) {
         }
             if(commande_fd != 0){
         printk("[ERROR] Impossible create angle descriptor\n");
-        }
+        }*/
 	
 	  
 	
 
     /* creation tache périodiques*/
-  //init_control(double pposition0,double pposition85, double pangle_15, double pangle15);
+  init_control(7.263,-9.534,-1.07,-4.36, 3.225, -0.48);
   rt_set_oneshot_mode();
-  /*ierr_1 = rt_task_init(&acquisition,acquisition_pendule1,0,STACK_SIZE, PRIORITE2, 0, 0);
+  ierr_1 = rt_task_init(&acquisition,acquisition_pendule1,0,STACK_SIZE, PRIORITE2, 0, 0);
   ierr_2 = rt_task_init(&lecture,lecture_can,0,STACK_SIZE, PRIORITE1, 0, 0);
   ierr_3 = rt_task_init(&control,control_pendule2,0,STACK_SIZE, PRIORITE3, 1, 0);
-  ierr_4 = rt_task_init(&actuator,actuator_pendule1,0,STACK_SIZE, PRIORITE4, 1, 0);*/
+  ierr_4 = rt_task_init(&actuator,actuator_pendule1,0,STACK_SIZE, PRIORITE4, 1, 0);
   
 
 
 
   start_rt_timer(nano2count(TICK_PERIOD));
   now = rt_get_time();
-  rt_task_make_periodic(&calibration, now, nano2count(PERIODE_CONTROL));
-/*
+
   rt_task_make_periodic(&acquisition, now, nano2count(PERIODE_CONTROL));
-  rt_task_make_periodic(&lecture, now, nano2count(PERIODE_CONTROL2));*/
+  rt_task_make_periodic(&lecture, now, nano2count(PERIODE_CONTROL2));
 
  
  

@@ -35,7 +35,7 @@ int SetChanel(unsigned char);
 int ADRangeSelect(unsigned char,unsigned char);
 u16 ReadAD(void);
 u8 ReadChannel(void);
-double valueToVoltagePolar(int vRef, int value);
-double valueToVoltageUniPolar(int vRef, int value);
+float valueToVoltagePolar(int vRef, int value);
+float valueToVoltageUniPolar(int vRef, int value);
 
 #endif

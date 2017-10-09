@@ -16,11 +16,11 @@
 #define ANGLE0 0
 #define ANGLE_WIDTH 30.0
 #define POSITION_WIDTH 90.5
-void   init_control(double pposition0,double pposition90,double porigin, double pangle_15, double pangle15, double pangle0);
-double commande(double position, double angle);
-double conversionVoltToAngle(double angle);
-double conversionVoltToPosition(double position);
-double commandeVoltage(double angle, double position);
+void   init_control(float pposition0,float pposition90,float porigin, float pangle_15, float pangle15, float pangle0);
+float commande(float position, float angle);
+float conversionVoltToAngle(float angle);
+float conversionVoltToPosition(float position);
+float commandeVoltage(float angle, float position);
 
 
 

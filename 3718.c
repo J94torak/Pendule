@@ -48,15 +48,15 @@ printk("Channel=%d\n",((int)(inb(R0)&(0x0F))));
 return (u8)(inb(R0)&(0x0F));
 }
 
-double valueToVoltagePolar(int vRef, int value){
+float valueToVoltagePolar(int vRef, int value){
 
-return ((double)vRef)*(((double)value)-2048.0)/2048.0;
+return ((float)vRef)*(((float)value)-2048.0)/2048.0;
 
 }
 
-double valueToVoltageUniPolar(int vRef, int value){
+float valueToVoltageUniPolar(int vRef, int value){
 
-return ((double)vRef)*2.0*((double)value)/4096.0;
+return ((float)vRef)*2.0*((float)value)/4096.0;
 
 }
 

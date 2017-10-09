@@ -33,16 +33,16 @@ outb(0xFF,PCM3712_SYNC);
 
 }
 
-int VoltageToValue(double voltage){
+int VoltageToValue(float voltage){
 
 return (int)(voltage/10.0*2048.0+2048.0);
 }
 
 
-int SetDAVol(unsigned char channel,double voltage){
-
-printk("In function SetDAVol");
+int SetDAVol(unsigned char channel,float voltage){
 int value=0;
+printk("In function SetDAVol");
+
 /*if(voltage<-10.0||voltage>10.0)
 printk("Exit");
 return -1;*/
@@ -62,7 +62,6 @@ static int init_3712(void) {
 
 static void exit_3712(void) {
 exit3712();
-return 0;
 }
 
 
