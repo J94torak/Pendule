@@ -85,7 +85,7 @@ void test3(long arg){
 		printk("angleV=%dmv\n",(int)(angleV*1000.0)); 
 		commande  = commandeVoltage(angleV,positionV);
 		printk("Commande = %dmv\n", (int)(commande*1000.0));
-		SetDAVol(0,3*commande);
+		SetDAVol(0,2.5*commande);//arcom12 0.75*commande);//arcom21 4*commande);
 		
 		
 		rt_task_wait_period();
@@ -117,7 +117,7 @@ static int test_init(void) {
 
 static void test_exit(void) {
  stop_rt_timer(); 
- //rt_task_delete(&tache_horloge);
+ rt_task_delete(&tache_horloge);
 
 }
 
