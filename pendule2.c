@@ -1,4 +1,3 @@
-
 #include<linux/init.h>
 #include<linux/module.h>
 #include <asm/io.h>
@@ -19,7 +18,7 @@ MODULE_LICENSE("GPL");
 /* define pour tache periodique */
 #define STACK_SIZE  2000
 #define TICK_PERIOD 1000000    //  1 ms
-#define PERIODE_CONTROL 10000000 //10ms
+#define PERIODE_CONTROL  20000000 //10ms
 #define PERIODE_CONTROL2 10000000 //5ms
 #define N_BOUCLE 10000000
 #define NUMERO1 1
@@ -60,9 +59,12 @@ u16 commande_buff[2];*/
 
 
 void control_pendule1(long arg){
+u16 commande_pendule1l=0;
 while(1){
 commande_pendule1=(u16) VoltageToValue(commande(valueToVoltagePolar(5, angle_pendule1),valueToVoltagePolar(10, position_pendule1)));
-send(0x12,2,&commande_pendule1);
+commande_pendule1l=commande_pendule1;
+printk("commande pendule 1 envoyé: %d\n",(int) commande_pendule1l);
+send(0x12,2,&commande_pendule1l);
 printk("commande pendule 1 envoyé: %d\n",(int) commande_pendule1);
 rt_task_suspend (&control);
 }
@@ -110,7 +112,7 @@ float commande=valueToVoltagePolar(10, commande_pendule2);
 printk("Commande = %dmv\n", (int)(commande*1000.0));
 
 		
-			SetDAVol(0,2.5*commande);
+			SetDAVol(0,2.2*commande);
 	
 rt_task_suspend (&actuator);
 }
@@ -121,6 +123,7 @@ void lecture_can(long arg){
 u16 adress[2];
 int id=0;
 int dlc=0;
+int task_status=0;
 	while(1){
     receive(&adress, &id,&dlc);
     printk("id= %d\n",id);
@@ -137,6 +140,7 @@ int dlc=0;
 			*/
         printk("commande adress 0 = %d\n",commande_pendule2);
         rt_task_resume(&actuator);//rtask_resume actuator
+		 
     }
     if(id==0x10 && dlc==4){
         angle_pendule1=adress[0];
@@ -144,6 +148,7 @@ int dlc=0;
         position_pendule1=adress[1];
         printk("pos adress 1 = %d\n",adress[1]);
         rt_task_resume(&control);//rtask_resume control
+		  
     }
 rt_task_wait_period();
 
@@ -158,7 +163,7 @@ static int pendule2_init(void) {
 
 
     /* creation tache périodiques*/
-  init_control(8.09,-8.70,-0.57,-3.78, 4.0, -0.124);
+  //init_control(9.4,-7.443,0.9534,-3.78, 4.026, -0.133); //init_control doesn't work
   rt_set_oneshot_mode();
  ierr_1 = rt_task_init(&acquisition,acquisition_pendule2,0,STACK_SIZE, PRIORITE2, 0, 0);
   ierr_2 = rt_task_init(&lecture,lecture_can,0,STACK_SIZE, PRIORITE1, 0, 0);
