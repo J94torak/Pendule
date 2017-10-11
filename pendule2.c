@@ -8,7 +8,7 @@
 #include <rtai_fifos.h>
 #include"3718.h"
 #include"3712.h"
-#include "controller.h"
+#include "controller1.h"
 #include "sensor.h"
 #include "SJA1000.h"
 
@@ -18,7 +18,7 @@ MODULE_LICENSE("GPL");
 /* define pour tache periodique */
 #define STACK_SIZE  2000
 #define TICK_PERIOD 1000000    //  1 ms
-#define PERIODE_CONTROL  20000000 //10ms
+#define PERIODE_CONTROL  10000000 //10ms
 #define PERIODE_CONTROL2 10000000 //5ms
 #define N_BOUCLE 10000000
 #define NUMERO1 1
@@ -61,7 +61,7 @@ u16 commande_buff[2];*/
 void control_pendule1(long arg){
 u16 commande_pendule1l=0;
 while(1){
-commande_pendule1=(u16) VoltageToValue(commande(valueToVoltagePolar(5, angle_pendule1),valueToVoltagePolar(10, position_pendule1)));
+commande_pendule1=(u16) VoltageToValue(commande1(valueToVoltagePolar(5, angle_pendule1),valueToVoltagePolar(10, position_pendule1)));
 commande_pendule1l=commande_pendule1;
 printk("commande pendule 1 envoyé: %d\n",(int) commande_pendule1l);
 send(0x12,2,&commande_pendule1l);
@@ -165,10 +165,10 @@ static int pendule2_init(void) {
     /* creation tache périodiques*/
   //init_control(9.4,-7.443,0.9534,-3.78, 4.026, -0.133); //init_control doesn't work
   rt_set_oneshot_mode();
- ierr_1 = rt_task_init(&acquisition,acquisition_pendule2,0,STACK_SIZE, PRIORITE2, 0, 0);
+// ierr_1 = rt_task_init(&acquisition,acquisition_pendule2,0,STACK_SIZE, PRIORITE2, 0, 0);
   ierr_2 = rt_task_init(&lecture,lecture_can,0,STACK_SIZE, PRIORITE1, 0, 0);
   ierr_3 = rt_task_init(&control,control_pendule1,0,STACK_SIZE, PRIORITE3, 1, 0);
-  ierr_4 = rt_task_init(&actuator,actuator_pendule2,0,STACK_SIZE, PRIORITE4, 1, 0);
+  //ierr_4 = rt_task_init(&actuator,actuator_pendule2,0,STACK_SIZE, PRIORITE4, 1, 0);
    
 
 
@@ -179,7 +179,7 @@ static int pendule2_init(void) {
 
 
 
-  rt_task_make_periodic(&acquisition, now, nano2count(PERIODE_CONTROL));
+ //rt_task_make_periodic(&acquisition, now, nano2count(PERIODE_CONTROL));
   rt_task_make_periodic(&lecture, now, nano2count(PERIODE_CONTROL2));
  
  
@@ -188,10 +188,10 @@ static int pendule2_init(void) {
 
 static void pendule2_exit(void) {
  stop_rt_timer(); 
- rt_task_delete(&acquisition);
+ //rt_task_delete(&acquisition);
 rt_task_delete(&lecture);
  rt_task_delete(&control);
-rt_task_delete(&actuator);
+//rt_task_delete(&actuator);
 }
 
 

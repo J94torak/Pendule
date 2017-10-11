@@ -8,7 +8,8 @@
 #include <rtai_fifos.h>
 #include"3718.h"
 #include"3712.h"
-#include "controller.h"
+#include "controller2.h"
+
 #include "sensor.h"
 #include "SJA1000.h"
 
@@ -18,7 +19,7 @@ MODULE_LICENSE("GPL");
 /* define pour tache periodique */
 #define STACK_SIZE  2000
 #define TICK_PERIOD 1000000    //  1 ms
-#define PERIODE_CONTROL 20000000 //10ms
+#define PERIODE_CONTROL 10000000 //20ms
 #define PERIODE_CONTROL2 10000000 //5ms
 #define N_BOUCLE 10000000
 #define NUMERO1 1
@@ -61,7 +62,7 @@ u16 commande_buff[2];*/
 void control_pendule2(long arg){
 u16 commande_pendule2l=0;
 while(1){
-commande_pendule2=(u16) VoltageToValue(commande(valueToVoltagePolar(5, angle_pendule2),valueToVoltagePolar(10, position_pendule2)));
+commande_pendule2=(u16) VoltageToValue(commande2(valueToVoltagePolar(5, angle_pendule2),valueToVoltagePolar(10, position_pendule2)));
 commande_pendule2l=commande_pendule2;
 printk("commande pendule 2 envoyé: %d\n",(int) commande_pendule2l );
 send(0x22,2,&commande_pendule2l);
@@ -109,7 +110,7 @@ while(1){
 
 float commande=valueToVoltagePolar(10, commande_pendule1);
 printk("Commande = %dmv\n", (int)(commande*1000.0));
-SetDAVol(0,0.125*commande);
+SetDAVol(0,0.75*commande);
 	
 rt_task_suspend (&actuator);
 }
