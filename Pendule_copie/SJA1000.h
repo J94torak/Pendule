@@ -33,6 +33,8 @@ MODULE_LICENSE("GPL");
 #define IDR2 (CONTROL + 21)
 #define DATAR (CONTROL + 22)//PREMIER @ jusqu'à 30
 #define CLOCK_DEVIDER (CONTROL + 31)
+#define IRQ 5
+
 
 void send(int id, int dlc, void* adress );
 void receive(void* adress, int* id,int* dlc);

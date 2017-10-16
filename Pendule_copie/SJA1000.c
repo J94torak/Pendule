@@ -57,6 +57,9 @@ void receive(void* adress, int* id,int* dlc){
 		
 	    }
 	}
+	lecture=inb(INTERRUPT);
+
+	
 }
 
 
@@ -67,13 +70,13 @@ void receive(void* adress, int* id,int* dlc){
 void init_SJA1000(void) 
 {
 	
-	outb(0x01,CONTROL);
+    outb(0x03,CONTROL);
 	outb(0x00,ACR);
 	outb(0xFF,AMR);
 	outb(0x03,BTR0);
 	outb(0x1C,BTR1);
 	outb(0xFA,OCR);
-	outb(0x00,CONTROL);
+	outb(0x02,CONTROL);
   	
 }
 
@@ -84,7 +87,7 @@ void init_SJA1000(void)
 int SJA1000init(void) {
 
    init_SJA1000();
-
+ 
  return(0);
  
 }

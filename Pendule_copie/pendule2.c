@@ -32,7 +32,7 @@ MODULE_LICENSE("GPL");
 
 #define SYNCHRONE   1 // 1 synchrone 0 asyncrone
 
-#define IRQ 6
+#define IRQ 5
 
 /* RT_TASK */
 
@@ -83,9 +83,11 @@ angle_pendule2 = acquisition_angle();
 position_pendule2 = acquisition_position();
 envoie[0] = angle_pendule2;
 envoie[1] = position_pendule2;
+
+send(0x20,4,&envoie);
 printk("angule pendule 2 envoyé: %d\n",(int) angle_pendule2);
 printk("position pendule 2 envoyé: %d\n",(int) position_pendule2);
-	send(0x20,4,&envoie);
+	
 	/*now=(u16)rt_get_time_ns();
 	angle_buff[0] = now;
 	angle_buff[1] = angle_pendule2;
@@ -115,9 +117,7 @@ while(1){
 
 float commande=valueToVoltagePolar(10, commande_pendule2);
 printk("Commande = %dmv\n", (int)(commande*1000.0));
-
-		
-			SetDAVol(0,2.2*commande);
+SetDAVol(0,2.2*commande);
 	
 rt_task_suspend (&actuator);
 }
@@ -167,10 +167,9 @@ void test4(void){
     int id=0;
     int dlc=0;
 	//int task_status=0;
-	u8 lecture;
 	
 	receive(&adress, &id,&dlc);
-	lecture=inb(INTERRUPT);
+	rt_ack_irq(IRQ);/* acquittement de l'interruption */
 	printk("id=%d\n",id);
 	printk("dlc=%d\n",dlc);
 	printk("valeur recue = %d\n",adress[0]);
@@ -181,10 +180,10 @@ void test4(void){
         status=-1;
        do{
         	status = rtf_put(2,commande_buff,2); 
-			}while (status!=2);
-			*/
+			}while (status!=2);*/
+			
         printk("commande adress 0 = %d\n",commande_pendule2);
-        //rt_task_resume(&actuator);//rtask_resume actuator
+        rt_task_resume(&actuator);//rtask_resume actuator
 		 
     }
     if(id==0x10 && dlc==4){
@@ -192,11 +191,11 @@ void test4(void){
         printk("angle adress 0 = %d\n",adress[0]);
         position_pendule1=adress[1];
         printk("pos adress 1 = %d\n",adress[1]);
-        //rt_task_resume(&control);//rtask_resume control
+        rt_task_resume(&control);//rtask_resume control
 		  
     }
 	
-	rt_ack_irq(IRQ);/* acquittement de l'interruption */
+	
 
 }
 
@@ -211,10 +210,10 @@ static int pendule2_init(void) {
     /* creation tache périodiques*/
   //init_control(9.4,-7.443,0.9534,-3.78, 4.026, -0.133); //init_control doesn't work
   rt_set_oneshot_mode();
- //ierr_1 = rt_task_init(&acquisition,acquisition_pendule2,0,STACK_SIZE, PRIORITE2, 0, 0);
-  //ierr_2 = rt_task_init(&lecture,lecture_can,0,STACK_SIZE, PRIORITE1, 0, 0);
-  //ierr_3 = rt_task_init(&control,control_pendule1,0,STACK_SIZE, PRIORITE3, 1, 0);
-  //ierr_4 = rt_task_init(&actuator,actuator_pendule2,0,STACK_SIZE, PRIORITE4, 1, 0);
+ ierr_1 = rt_task_init(&acquisition,acquisition_pendule2,0,STACK_SIZE, PRIORITE2, 0, 0);
+  ierr_2 = rt_task_init(&lecture,lecture_can,0,STACK_SIZE, PRIORITE1, 0, 0);
+  ierr_3 = rt_task_init(&control,control_pendule1,0,STACK_SIZE, PRIORITE3, 1, 0);
+  ierr_4 = rt_task_init(&actuator,actuator_pendule2,0,STACK_SIZE, PRIORITE4, 1, 0);
    
 
 
@@ -225,16 +224,12 @@ static int pendule2_init(void) {
 
 
 
- //rt_task_make_periodic(&acquisition, now, nano2count(PERIODE_CONTROL));
-  //rt_task_make_periodic(&lecture, now, nano2count(PERIODE_CONTROL2));
+ rt_task_make_periodic(&acquisition, now, nano2count(PERIODE_CONTROL));
+  rt_task_make_periodic(&lecture, now, nano2count(PERIODE_CONTROL2));
  
  
  
- /*mode interruption*/
-	rt_global_cli(); /* desactivation des IT */
-	rt_request_global_irq(IRQ,test4); /*installation du handler */                                           /* sur l'IT num_irq       */
-	rt_startup_irq(IRQ); /* activation de la ligne d'interruption */
-	rt_global_sti(); /* re-activation des IT */
+
  
  
  return(0);
@@ -242,17 +237,14 @@ static int pendule2_init(void) {
 
 static void pendule2_exit(void) {
 
-/*desactive mode interruption*/
-	rt_shutdown_irq(IRQ);/* désactivation de l'IT num_irq */
-	rt_free_global_irq(IRQ); /* désintallation du handler */
 
 
 
    stop_rt_timer(); 
- //rt_task_delete(&acquisition);
-//rt_task_delete(&lecture);
- //rt_task_delete(&control);
-//rt_task_delete(&actuator);
+ rt_task_delete(&acquisition);
+rt_task_delete(&lecture);
+ rt_task_delete(&control);
+rt_task_delete(&actuator);
 }
 
 
