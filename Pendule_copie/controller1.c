@@ -77,7 +77,8 @@ float commande1(float angle, float position){
 float conversionVoltToAngle1(float angle){
 		float angle_converti=0;
 		angle_converti= (angle-angle0)/pasAngle*3.14/180.0;	
-		printk("angle_converti = %d radians\n",(int)(angle_converti*1000));
+		//printk("angle_converti = %d radians\n",(int)(angle_converti*1000));
+		angle_converti=(((float)((int)(angle_converti*100)))/100.0);
 		return angle_converti;
 }
 
@@ -85,7 +86,8 @@ float conversionVoltToPosition1(float position){
 	
 	float position_converti=0;
 	position_converti = (position-origin)/pasPosition/100.0;
-	printk("position_converti = %d mm\n",(int)(position_converti*1000));
+	//printk("position_converti = %d mm\n",(int)(position_converti*1000));
+	position_converti=(((float)((int)(position_converti*100)))/100.0);
 	return position_converti;
 }
 

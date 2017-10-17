@@ -47,7 +47,7 @@ u8 ReadChannel(void){
 while((inb(STATUS)&0x80)!=0x00);
 outb(0xFF,R0);
 while((inb(STATUS)&0x90)!=0x10);
-printk("Channel=%d\n",((int)(inb(R0)&(0x0F))));
+//printk("Channel=%d\n",((int)(inb(R0)&(0x0F))));
 return (u8)(inb(R0)&(0x0F));
 }
 

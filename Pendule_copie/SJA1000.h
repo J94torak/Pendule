@@ -8,10 +8,7 @@
 #include <asm/irq.h>
 #include <rtai.h>
 #include <rtai_sched.h>
-#include <rtai_fifos.h>
 
-
-MODULE_LICENSE("GPL");
 
 
 /* define pour gestion registres CAN 7841*/

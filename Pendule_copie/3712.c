@@ -38,7 +38,7 @@ int SetDAVol(unsigned char channel,float voltage){
 
 
 int value=0;
-printk("In function SetDAVol\n");
+//printk("In function SetDAVol\n");
 /*if(voltage<-10.0||voltage>10.0)
 printk("Exit");
 return -1;*/

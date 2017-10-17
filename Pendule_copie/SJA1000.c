@@ -34,7 +34,10 @@ void receive(void* adress, int* id,int* dlc){
     u8 idt1,idt2,lecture;
 	u8 message[8];
 	int i=0;
+	lecture=inb(INTERRUPT);
+	printk("INTTERUPT=%d\n",lecture);
     lecture=inb(STATUS_SJA);
+    printk("Condition=%d\n",lecture&0x01);
 	if((lecture&0x01)==0x01){
 		idt1=inb(IDR1);
 		idt2=inb(IDR2);
@@ -57,7 +60,7 @@ void receive(void* adress, int* id,int* dlc){
 		
 	    }
 	}
-	lecture=inb(INTERRUPT);
+	
 
 	
 }
@@ -71,7 +74,7 @@ void init_SJA1000(void)
 {
 	
     outb(0x03,CONTROL);
-	outb(0x00,ACR);
+	outb(0xFF,ACR);
 	outb(0xFF,AMR);
 	outb(0x03,BTR0);
 	outb(0x1C,BTR1);

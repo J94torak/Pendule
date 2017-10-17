@@ -6,8 +6,8 @@
 #include<linux/init.h>
 #include "3718.h"
 
-u16 acquisition_angle(void);
-u16 acquisition_position(void);
+float acquisition_angle(void);
+float acquisition_position(void);
 int initsensor(void);
 
 #endif

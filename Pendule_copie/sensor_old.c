@@ -1,5 +1,6 @@
-#include "sensor.h"
-MODULE_LICENSE("GPL");
+
+#include "sensor_old.h"
+
 int initsensor(){
 		ADRangeSelect(0x00,RANGE_5);
     ADRangeSelect(0x01,RANGE_10);
@@ -8,26 +9,21 @@ int initsensor(){
 }
 
 
-u16 acquisition_angle(){
-u16 voltage=0;
-int i=0;
+float acquisition_angle(){
+int voltage=0;
 	if(SetChanel(0x00)!=0x00)
       printk("Angle:OK\n");
   else
       printk("Angle:NOK\n");
-    while (i<2000){
-i++;
-
-} 
-    voltage = ReadAD();
-    printk("angle channel 0=%d\n",(unsigned int)voltage);
-return	 voltage;
+      voltage = ReadAD();
+    //printk("angle channel 0=%d\n",(unsigned int)voltage);
+return	valueToVoltagePolar(5, voltage);
 
 }
 
-u16 acquisition_position(){
+float acquisition_position(){
+int voltage=0;
 int i=0;
-u16 voltage=0;
 		if(SetChanel(0x01)!=0x00)
       printk("Position:OK\n");
   else
@@ -35,10 +31,10 @@ u16 voltage=0;
 while (i<2000){
 i++;
 
-}
+}  
     voltage = ReadAD();
-    printk("Position channel 1=%d\n",(unsigned int)voltage);
-return voltage;    
+    //printk("Position channel 1=%d\n",(unsigned int)voltage);
+return valueToVoltagePolar(10, voltage);    
 
 }
 
