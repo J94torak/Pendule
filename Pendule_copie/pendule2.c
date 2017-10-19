@@ -17,7 +17,7 @@ MODULE_LICENSE("GPL");
 #define STACK_SIZE  2000
 #define TICK_PERIOD 1000000    //  1 ms
 #define PERIODE_CONTROL  10000000 //10ms
-#define PERIODE_CONTROL2 10000000 //5ms
+#define PERIODE_CONTROL2 10000000 //10ms
 #define N_BOUCLE 10000000
 #define NUMERO1 1
 #define NUMERO2 2
@@ -63,7 +63,7 @@ u16 commande_buff[2];*/
 void control_pendule1(long arg){
 u16 commande_pendule1l=0;
 while(1){
-commande_pendule1=(u16) VoltageToValue(commande1(valueToVoltagePolar(5, (int)angle_pendule1),valueToVoltagePolar(10, (int)position_pendule1)));
+commande_pendule1=(u16) VoltageToValue(commandeVoltage1(valueToVoltagePolar(5, angle_pendule1),valueToVoltagePolar(10,position_pendule1)));
 commande_pendule1l=commande_pendule1;
 //printk("commande pendule 1 envoyé: %d\n",(int) commande_pendule1l);
 send(0x12,2,&commande_pendule1l);
@@ -83,8 +83,8 @@ envoie[0] = angle_pendule2;
 envoie[1] = position_pendule2;
 
 send(0x20,4,&envoie);
-//printk("angule pendule 2 envoyé: %d\n",(int)(1000.0*valueToVoltagePolar(5,(int)angle_pendule2)) );
-//printk("position pendule 2 envoyé: %d\n",(int)(1000.0*valueToVoltagePolar(10,(int)position_pendule2)) );
+printk("angule pendule 2 envoyé: %d\n",(int)(1000.0*valueToVoltagePolar(5,(int)angle_pendule2)) );
+printk("position pendule 2 envoyé: %d\n",(int)(1000.0*valueToVoltagePolar(10,(int)position_pendule2)) );
 	
 	/*now=(u16)rt_get_time_ns();
 	angle_buff[0] = now;
@@ -147,7 +147,7 @@ int dlc=0;
     }
     if(id==0x10 && dlc==4){
         angle_pendule1=adress[0];
-        //printk("angle recue = %d mv\n",(int)(1000.0*valueToVoltagePolar(5,(int)adress[0])));
+         //printk("angle recue = %d mv\n",(int)(1000.0*valueToVoltagePolar(5,(int)adress[0])));
         position_pendule1=adress[1];
         //printk("pos recue = %d mv\n",(int)(1000.0*valueToVoltagePolar(10,(int)adress[1])));
         rt_task_resume(&control);//rtask_resume control
@@ -197,16 +197,6 @@ void test4(void){
 
 }
 
-void test5(long arg){
-	char a=10;
-	while(1){
-	//printk("a=%d\n",a);
-	send(0x12,1,&a);
-	rt_task_wait_period();
-	}
-}
-
-
 
 static int pendule2_init(void) {
 
@@ -221,13 +211,11 @@ static int pendule2_init(void) {
 	
     /* creation tache périodiques*/
   rt_set_oneshot_mode();
- ierr_1 = rt_task_init(&acquisition,acquisition_pendule2,0,STACK_SIZE, PRIORITE2, 0, 0);
+  ierr_1 = rt_task_init(&acquisition,acquisition_pendule2,0,STACK_SIZE, PRIORITE2, 0, 0);
   //ierr_2 = rt_task_init(&lecture,lecture_can,0,STACK_SIZE, PRIORITE1, 0, 0);
   //ierr_3 = rt_task_init(&control,control_pendule1,0,STACK_SIZE, PRIORITE3, 1, 0);
   ierr_4 = rt_task_init(&actuator,actuator_pendule2,0,STACK_SIZE, PRIORITE4, 1, 0);
    
-
-ierr_1 = rt_task_init(&acquisition,test5,0,STACK_SIZE, PRIORITE2, 0, 0);
 
   start_rt_timer(nano2count(TICK_PERIOD));
   now = rt_get_time();

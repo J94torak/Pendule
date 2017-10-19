@@ -5,7 +5,6 @@
 #include <asm/irq.h>
 #include <rtai.h>
 #include <rtai_sched.h>
-#include <rtai_fifos.h>
 
 #include"3718.h"
 #include"3712.h"
@@ -85,7 +84,7 @@ void test3(long arg){
 		printk("angleV=%dmv\n",(int)(angleV*1000.0)); 
 		commande  = commandeVoltage(angleV,positionV);
 		printk("Commande = %dmv\n", (int)(commande*1000.0));
-		SetDAVol(0,2.5*commande);//arcom12 0.75*commande);//arcom21 4*commande);
+		SetDAVol(0, 0.75*commande);       //arcom22 2.5*commande);//arcom12 0.75*commande);//arcom21 4*commande);
 		
 		
 		rt_task_wait_period();

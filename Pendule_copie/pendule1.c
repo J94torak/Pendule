@@ -66,16 +66,15 @@ u16 valeur=0;
 void control_pendule2(long arg){
 u16 commande_pendule2l=0;
 while(1){
-commande_pendule2=(u16) VoltageToValue(commande2(valueToVoltagePolar(5,(int) angle_pendule2),valueToVoltagePolar(10, (int)position_pendule2)));
+commande_pendule2=(u16) VoltageToValue(commandeVoltage2(valueToVoltagePolar(5,angle_pendule2),valueToVoltagePolar(10,position_pendule2)));
 commande_pendule2l=commande_pendule2;
 //printk("commande pendule 2 envoyé: %d\n",(int)commande_pendule2l );
 send(0x22,2,&commande_pendule2l);
-//printk("commande pendule 2 envoyé: %d\n",(int)commande_pendule2 );
+printk("commande pendule 2 envoyé: %d\n",(int)commande_pendule2 );
 
 rt_task_suspend(&control);
 }
 }
-
 
 void acquisition_pendule1(long arg){
 u16 envoie[2];
