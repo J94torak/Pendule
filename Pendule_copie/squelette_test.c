@@ -5,11 +5,12 @@
 #include <asm/irq.h>
 #include <rtai.h>
 #include <rtai_sched.h>
-
+#include <rtai_fifos.h>
+#include <rtai_nam2num.h>
 #include"3718.h"
 #include"3712.h"
 #include "controller.h"
-#include "sensor_old.h"
+#include "sensor.h"
 #include "SJA1000.h"
 
 
@@ -22,6 +23,13 @@ MODULE_LICENSE("GPL");
 #define N_BOUCLE 10000000
 #define NUMERO 1
 #define PRIORITE 1
+
+
+
+u16 angle_buff[2];
+u16 position_buff[2];
+u16 commande_buff[2];
+
 
 /* RT_TASK */
 static RT_TASK tache_horloge;
@@ -73,18 +81,52 @@ void test2(long arg){
 
 void test3(long arg){
 
-	float angleV=0,positionV=0;
-	float commande=0;
+	int angle=0,position=0;
+	//float commande=0;
+	int now;
+	int status;
+	char conversion[8];
 	
 	while(1){
 		
-		angleV    = acquisition_angle();
-		positionV = acquisition_position();
-		printk("positionV=%dmv\n",(int)(positionV*1000.0)); 
-		printk("angleV=%dmv\n",(int)(angleV*1000.0)); 
-		commande  = commandeVoltage(angleV,positionV);
-		printk("Commande = %dmv\n", (int)(commande*1000.0));
-		SetDAVol(0, 0.75*commande);       //arcom22 2.5*commande);//arcom12 0.75*commande);//arcom21 4*commande);
+		angle   = (int) acquisition_angle();
+		position = (int )acquisition_position();
+		now=(int)rt_get_time_ns();
+		printk("Temps:%d angle=%d, position%d",now,angle,position);
+		
+		
+		num2nam( (unsigned long)now ,&conversion);	
+		conversion[7]=' ';
+		status = rtf_put(0,&conversion,8);
+		
+		
+		num2nam( (unsigned long)angle,&conversion);	
+		conversion[7]='\n';
+		status = rtf_put(0,&conversion,8);
+		
+		num2nam( (unsigned long)now ,&conversion);	
+		conversion[7]=' ';
+		status = rtf_put(1,&conversion,8);
+		
+		
+		num2nam( (unsigned long)position,&conversion);	
+		conversion[7]='\n';
+		status = rtf_put(1,&conversion,8);
+		
+		
+		//printk("positionV=%dmv\n",(int)(positionV*1000.0)); 
+		//printk("angleV=%dmv\n",(int)(angleV*1000.0)); 
+		/*commande  = commandeVoltage(angle,position);
+		commande_buff[0]=(u16)rt_get_time_ns();
+        commande_buff[1]=commande;
+        status=-1;
+       	
+        status = rtf_put(2,commande_buff,2); 
+		
+		
+		
+		printk("Commande = %dmv\n", (int)(commande*1000.0));*/
+		//SetDAVol(0, 0.75*commande);       //arcom22 2.5*commande);//arcom12 0.75*commande);//arcom21 4*commande);
 		
 		
 		rt_task_wait_period();
