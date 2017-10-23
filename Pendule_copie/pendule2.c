@@ -9,7 +9,6 @@
 #include "controller1.h"
 #include "sensor.h"
 #include "SJA1000.h"
-#include <rtai_fifos.h>
 
 
 MODULE_LICENSE("GPL");
@@ -38,7 +37,7 @@ MODULE_LICENSE("GPL");
 static RT_TASK acquisition;
 static RT_TASK control;
 static RT_TASK actuator;
-static RT_TASK lecture;
+
 
 u16 angle_pendule1;
 u16 position_pendule1;
@@ -49,24 +48,14 @@ u16 position_pendule2;
 u16 commande_pendule2;
 
 
-u16 origin_;
-u16 position0_;
-u16 position90_;
-u16 angle0_;
-u16 angle30_;
-
-
-u16 angle_buff[2];
-u16 position_buff[2];
-u16 commande_buff[2];
-
+RTIME now;
 
 void control_pendule1(long arg){
 u16 commande_pendule1l=0;
 while(1){
 commande_pendule1=(u16) VoltageToValue(commandeVoltage1(valueToVoltagePolar(5, angle_pendule1),valueToVoltagePolar(10,position_pendule1)));
 commande_pendule1l=commande_pendule1;
-//printk("commande pendule 1 envoyé: %d\n",(int) commande_pendule1l);
+printk("commande pendule 1 envoyé: %d\n",(int) commande_pendule1l);
 send(0x12,2,&commande_pendule1l);
 //printk("commande pendule 1 envoyé: %d\n",(int) commande_pendule1);
 rt_task_suspend (&control);
@@ -75,8 +64,7 @@ rt_task_suspend (&control);
 
 void acquisition_pendule2(long arg){
 u16 envoie[2];
-u16 now;
-int status;
+
 while(1){
 angle_pendule2 = acquisition_angle();
 position_pendule2 = acquisition_position();
@@ -87,19 +75,6 @@ send(0x20,4,&envoie);
 printk("angule pendule 2 envoyé: %d\n",(int)(1000.0*valueToVoltagePolar(5,(int)angle_pendule2)) );
 printk("position pendule 2 envoyé: %d\n",(int)(1000.0*valueToVoltagePolar(10,(int)position_pendule2)) );
 	
-	now=(u16)rt_get_time_ns();
-	angle_buff[0] = now;
-	angle_buff[1] = angle_pendule2;
-	position_buff[0] = now;
-	position_buff[1] = position_pendule2;
- 	status=-1;
-	do{
-		status = rtf_put(0,angle_buff,2);
-	}while(status!=2);
-	status=-1;
-	do{
-		status = rtf_put(1,position_buff,2);
-	}while(status!=2);
 	
 
 
@@ -110,54 +85,27 @@ rt_task_wait_period();
 
 }
 
+
 void actuator_pendule2(long arg){
+RTIME nowp;
 while(1){
 //float angle=valueToVoltagePolar(5, angle_pendule2);
 
-float commande=valueToVoltagePolar(10, commande_pendule2);
+//float commande=valueToVoltagePolar(10, commande_pendule2);
 ////printk("Commande = %dmv\n", (int)(commande*1000.0));
-SetDAVol(0,0.5*commande);
-	
+//SetDAVol(0,2.2*commande);
+
+SetDA(0,commande_pendule2);
+printk("Commande_Value=%d\n",commande_pendule2);
+nowp=now;
+now = rt_get_time_ns();
+printk("TIME=%d\n",now-nowp);	
 rt_task_suspend (&actuator);
 }
 
 }
 
-void lecture_can(long arg){
-u16 adress[2];
-int id=0;
-int dlc=0;
-int status=0;
-	while(1){
-    receive(&adress, &id,&dlc);
-   // //printk("id= %d\n",id);
-   // //printk("dlc= %d\n",dlc);
 
-    if(id==0x22 && dlc==2){
-        commande_pendule2=adress[0];
-        commande_buff[0]=(u16)rt_get_time_ns();
-        commande_buff[1]=commande_pendule2;
-        status=-1;
-       do{
-        	status = rtf_put(2,commande_buff,2); 
-			}while (status!=2);
-			
-        //printk("commande recue = %d\n",commande_pendule2);
-        rt_task_resume(&actuator);//rtask_resume actuator
-		 
-    }
-    if(id==0x10 && dlc==4){
-        angle_pendule1=adress[0];
-         //printk("angle recue = %d mv\n",(int)(1000.0*valueToVoltagePolar(5,(int)adress[0])));
-        position_pendule1=adress[1];
-        //printk("pos recue = %d mv\n",(int)(1000.0*valueToVoltagePolar(10,(int)adress[1])));
-        rt_task_resume(&control);//rtask_resume control
-		  
-    }
-rt_task_wait_period();
-
-}
-}
 
 
 void test4(void){
@@ -165,7 +113,7 @@ void test4(void){
 	u16 adress[2];
     int id=0;
     int dlc=0;
-	int status=0;
+
 	
 	receive(&adress, &id,&dlc);
 	rt_ack_irq(IRQ);/* acquittement de l'interruption */
@@ -174,25 +122,18 @@ void test4(void){
 	////printk("valeur recue = %d\n",adress[0]);
 	if(id==0x22 && dlc==2){
         commande_pendule2=adress[0];
-        commande_buff[0]=(u16)rt_get_time_ns();
-        commande_buff[1]=commande_pendule2;
-        status=-1;
-       do{
-        	status = rtf_put(2,commande_buff,2); 
-			}while (status!=2);
-			
-        //printk("commande adress 0 = %d\n",commande_pendule2);
+        printk("commande adress 0 = %d\n",commande_pendule2);
         rt_task_resume(&actuator);//rtask_resume actuator
 		 
     }
-   /* if(id==0x10 && dlc==4){
+   if(id==0x10 && dlc==4){
         angle_pendule1=adress[0];
-         //printk("angle recue = %d mv\n",(int)(1000.0*valueToVoltagePolar(5,(int)adress[0])));
+         printk("angle recue = %d mv\n",(int)(1000.0*valueToVoltagePolar(5,(int)adress[0])));
         position_pendule1=adress[1];
-         //printk("pos recue = %d mv\n",(int)(1000.0*valueToVoltagePolar(10,(int)adress[1])));
+         printk("pos recue = %d mv\n",(int)(1000.0*valueToVoltagePolar(10,(int)adress[1])));
         rt_task_resume(&control);//rtask_resume control
 		  
-    }*/
+    }
 	
 	
 
@@ -202,8 +143,7 @@ void test4(void){
 static int pendule2_init(void) {
 
   int ierr_1,ierr_2,ierr_3,ierr_4;
-  RTIME now;
-
+  
 	 /*mode interruption*/
 	rt_global_cli(); /* desactivation des IT */
 	rt_request_global_irq(IRQ,test4); /*installation du handler */                                           /* sur l'IT num_irq       */
@@ -213,8 +153,9 @@ static int pendule2_init(void) {
     /* creation tache périodiques*/
   rt_set_oneshot_mode();
   ierr_1 = rt_task_init(&acquisition,acquisition_pendule2,0,STACK_SIZE, PRIORITE2, 0, 0);
-  //ierr_2 = rt_task_init(&lecture,lecture_can,0,STACK_SIZE, PRIORITE1, 0, 0);
-  //ierr_3 = rt_task_init(&control,control_pendule1,0,STACK_SIZE, PRIORITE3, 1, 0);
+  
+  
+  ierr_3 = rt_task_init(&control,control_pendule1,0,STACK_SIZE, PRIORITE3, 1, 0);
   ierr_4 = rt_task_init(&actuator,actuator_pendule2,0,STACK_SIZE, PRIORITE4, 1, 0);
    
 
@@ -223,10 +164,9 @@ static int pendule2_init(void) {
 
 rt_task_make_periodic(&acquisition, now, nano2count(PERIODE_CONTROL));
 
+  now = rt_get_time_ns();
+ 
 
- 
-  //rt_task_make_periodic(&lecture, now, nano2count(PERIODE_CONTROL2));
- 
  
  
 
@@ -244,8 +184,8 @@ static void pendule2_exit(void) {
 
    stop_rt_timer(); 
  rt_task_delete(&acquisition);
-//rt_task_delete(&lecture);
- //rt_task_delete(&control);
+
+ rt_task_delete(&control);
 rt_task_delete(&actuator);
 }
 
