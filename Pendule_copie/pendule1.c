@@ -17,7 +17,7 @@ MODULE_LICENSE("GPL");
 /* define pour tache periodique */
 #define STACK_SIZE  2000
 #define TICK_PERIOD 1000000    //  1 ms
-#define PERIODE_CONTROL 10000000 //20ms
+#define PERIODE_CONTROL  10000000 //20ms
 #define PERIODE_CONTROL2 10000000 //5ms
 #define N_BOUCLE 10000000
 #define NUMERO1 1
@@ -49,11 +49,6 @@ u16 position_pendule2;
 u16 commande_pendule2;
 
 
-u16 origin_;
-u16 position0_;
-u16 position90_;
-u16 angle0_;
-u16 angle30_;
 
 RTIME now;
 
@@ -67,7 +62,7 @@ commande_pendule2=(u16) VoltageToValue(commandeVoltage2(valueToVoltagePolar(5,an
 commande_pendule2l=commande_pendule2;
 //printk("commande pendule 2 envoyé: %d\n",(int)commande_pendule2l );
 send(0x22,2,&commande_pendule2l);
-printk("commande pendule 2 envoyé: %d\n",(int)commande_pendule2 );
+//printk("commande pendule 2 envoyé: %d\n",(int)commande_pendule2 );
 
 rt_task_suspend(&control);
 }
@@ -75,8 +70,6 @@ rt_task_suspend(&control);
 
 void acquisition_pendule1(long arg){
 u16 envoie[2];
-u16 now;
-int status;
 while(1){
 angle_pendule1 = acquisition_angle();
 position_pendule1 = acquisition_position();
@@ -94,14 +87,11 @@ void actuator_pendule1(long arg){
 RTIME nowp;
 while(1){
 
-//float commande=valueToVoltagePolar(10, (int)commande_pendule1);
-////printk("Commande = %dmv\n", (int)(commande*1000.0));
-//SetDAVol(0,0.75*commande);
-SetDA(0,commande_pendule1);
-printk("Commande_Value=%d\n",commande_pendule1);
-nowp=now;
-now = rt_get_time_ns();
-printk("TIME=%d\n",now-nowp);	
+float commande=valueToVoltagePolar(10, (int)commande_pendule1);
+//printk("Commande = %dmv\n", (int)(commande*1000.0));
+SetDAVol(0,0.52*commande);
+/*SetDA(0,commande_pendule1);
+printk("Commande_Value=%d\n",commande_pendule1);*/
 rt_task_suspend (&actuator);
 }
 
@@ -120,23 +110,23 @@ void test4(void){
 	////printk("id=%d\n",id);
 	////printk("dlc=%d\n",dlc);
 	////printk("valeur recue = %d\n",adress[0]);
-	rt_ack_irq(IRQ);/* acquittement de l'interruption */
+
 	if(id==0x12 && dlc==2){
         commande_pendule1=adress[0];
         	
-        printk("commande adress 0 = %d\n",commande_pendule1);
+        //printk("commande adress 0 = %d\n",commande_pendule1);
         rt_task_resume(&actuator);//rtask_resume actuator
 		  
     }
     if(id==0x20 && dlc==4){
         angle_pendule2=adress[0];
-         printk("angle recue = %d mv\n",(int)(1000.0*valueToVoltagePolar(5,(int)adress[0])));
+         //printk("angle recue = %d mv\n",(int)(1000.0*valueToVoltagePolar(5,(int)adress[0])));
         position_pendule2=adress[1];
-              printk("pos recue = %d mv\n",(int)(1000.0*valueToVoltagePolar(10,(int)adress[1])));
+              //printk("pos recue = %d mv\n",(int)(1000.0*valueToVoltagePolar(10,(int)adress[1])));
         rt_task_resume(&control);//rtask_resume control
  	}
 	
-	
+	rt_ack_irq(IRQ);/* acquittement de l'interruption */	
 	
 
 }

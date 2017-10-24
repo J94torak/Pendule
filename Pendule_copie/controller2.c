@@ -33,7 +33,7 @@ void init_control2(float pposition0,float pposition90,float porigin, float pangl
 	angle_15=pangle_15;
 	angle15=pangle15;
 	pasPosition=(position0-position90)/POSITION_WIDTH;   //Volt/cm
-    pasAngle= (angle_15-angle15)/ANGLE_WIDTH;          //volt/degre
+    pasAngle= (angle15-angle_15)/ANGLE_WIDTH;          //volt/degre
     
 }
 
@@ -66,7 +66,8 @@ float commande2(float angle, float position){
 	//commande= (-80.3092*x1-9.6237*x2-14.1215*x3-23.6260*x4);
 	commande= (-104.7570*x1 -15.8810*x2 -20.5358*x3 -30.5773*x4);	
 
-
+    printk("Angle=%d\n",(int)(angle*1000.0));
+    printk("Position=%d\n",(int)(position*1000.0));
     
   return commande;
    
@@ -77,7 +78,7 @@ float commande2(float angle, float position){
 float conversionVoltToAngle2(float angle){
 		float angle_converti=0;
 		angle_converti= (angle-angle0)/pasAngle*3.14/180.0;	
-		//printk("angle_converti = %d radians\n",(int)(angle_converti*1000));
+		printk("angle_converti = %d radians\n",(int)(angle_converti*1000));
 		angle_converti=(((float)((int)(angle_converti*100)))/100.0);
 		return angle_converti;
 }
@@ -85,7 +86,7 @@ float conversionVoltToAngle2(float angle){
 float conversionVoltToPosition2(float position){
 	float position_converti=0;
 	position_converti = (position-origin)/pasPosition/100.0;
-	//printk("position_converti = %d mm\n",(int)(position_converti*1000));
+	printk("position_converti = %d mm\n",(int)(position_converti*1000));
 	position_converti=(((float)((int)(position_converti*100)))/100.0);
 	return position_converti;
 }
