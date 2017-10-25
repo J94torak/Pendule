@@ -6,12 +6,10 @@
 #include <rtai.h>
 #include <rtai_sched.h>
 #include <rtai_fifos.h>
-#include <rtai_nam2num.h>
 #include"3718.h"
 #include"3712.h"
 #include "controller.h"
 #include "sensor.h"
-#include "SJA1000.h"
 
 
 MODULE_LICENSE("GPL");
@@ -29,7 +27,7 @@ MODULE_LICENSE("GPL");
 u16 angle_buff[2];
 u16 position_buff[2];
 u16 commande_buff[2];
-
+RTIME now;
 
 /* RT_TASK */
 static RT_TASK tache_horloge;
@@ -81,51 +79,44 @@ void test2(long arg){
 
 void test3(long arg){
 
-	int angle=0,position=0;
+	int angle=0,position=0,commande=0;
+	int separateur1=-1;
+	int separateur2=-32768;
 	//float commande=0;
-	int now;
-	int status;
-	char conversion[8];
+	RTIME nowp;
+	//int status;
+	int conversion;
+	int temps;
 	
 	while(1){
 		
-		angle   = (int) acquisition_angle();
-		position = (int )acquisition_position();
-		now=(int)rt_get_time_ns();
-		printk("Temps:%d angle=%d, position%d",now,angle,position);
+		
+		angle    = (int) acquisition_angle();
+		position = (int) acquisition_position();
+		nowp     = now;
+		now      = rt_get_time_ns();
+		temps = (int)((now-nowp)/10000);
+		printk("Temps:%d angle=%d, position%d",temps,angle,position);
 		
 		
-		num2nam( (unsigned long)now ,&conversion);	
-		conversion[7]=' ';
-		status = rtf_put(0,&conversion,8);
+
 		
+
+		rtf_put(0,&separateur2,4);
+		rtf_put(0,&temps,4);	
+		rtf_put(0,&separateur1,4);
+		rtf_put(0,&angle,4);	
 		
-		num2nam( (unsigned long)angle,&conversion);	
-		conversion[7]='\n';
-		status = rtf_put(0,&conversion,8);
+						
+		rtf_put(1,&separateur2,4);
+		rtf_put(1,&temps,4);	
+		rtf_put(1,&separateur1,4);
+		rtf_put(1,&position,4);	
 		
-		num2nam( (unsigned long)now ,&conversion);	
-		conversion[7]=' ';
-		status = rtf_put(1,&conversion,8);
-		
-		
-		num2nam( (unsigned long)position,&conversion);	
-		conversion[7]='\n';
-		status = rtf_put(1,&conversion,8);
-		
-		
-		//printk("positionV=%dmv\n",(int)(positionV*1000.0)); 
-		//printk("angleV=%dmv\n",(int)(angleV*1000.0)); 
-		/*commande  = commandeVoltage(angle,position);
-		commande_buff[0]=(u16)rt_get_time_ns();
-        commande_buff[1]=commande;
-        status=-1;
-       	
-        status = rtf_put(2,commande_buff,2); 
-		
-		
-		
-		printk("Commande = %dmv\n", (int)(commande*1000.0));*/
+		rtf_put(2,&separateur2,4);
+		rtf_put(2,&temps,4);	
+		rtf_put(2,&separateur1,4);
+		rtf_put(2,&commande,4);
 		//SetDAVol(0, 0.75*commande);       //arcom22 2.5*commande);//arcom12 0.75*commande);//arcom21 4*commande);
 		
 		
@@ -138,7 +129,7 @@ void test3(long arg){
 static int test_init(void) {
 
   int ierr;
-  RTIME now;
+
 
 
     /* creation tache périodiques*/
@@ -150,6 +141,7 @@ static int test_init(void) {
   now = rt_get_time();
   rt_task_make_periodic(&tache_horloge, now, nano2count(PERIODE_CONTROL));
  
+ 		now=(int)rt_get_time_ns();
 
  
  
