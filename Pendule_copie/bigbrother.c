@@ -18,16 +18,16 @@ int main(int argc, char* argv[]) {
     int bufferout[3000];
     char * input;
     char * output;
-    int i;
-    pid_t pid;
+    int i,j;
+    pid_t pid,pid1;
     i=0;
     pid=fork();   
     
     if(pid==0){
-     /*pid=fork();
-        if(pid!=0){
+     pid1=fork();
+        if(pid1!=0){
             i=2;
-         }*/
+         }
     }
     else{i=1;}
     
@@ -41,14 +41,12 @@ int main(int argc, char* argv[]) {
     input="/dev/rtf1"; 
     output="position.txt"; 
     
-    
     }
     else{
     input="/dev/rtf2"; 
     output="commande.txt"; 
     
     }
-    
      
     /* Create input file descriptor */
     input_fd = open (input, O_RDONLY);
@@ -68,15 +66,19 @@ int main(int argc, char* argv[]) {
  	printf("i=%d\n",i);
  	printf("output_fd=%d\n",output_fd);
     /* Copy process */
-    while((ret_in = read (input_fd, &buffer, BUF_SIZE)) > 0){
+    ret_in = read (input_fd, buffer, BUF_SIZE);
+    while((ret_in ) > 0){
     		printf("ret_in=%d\n",ret_in);
-    		sprintf(&bufferout,"%d",&buffer);
-            ret_out = write (output_fd, &bufferout, (ssize_t) ret_in);
+    		
+    		sprintf(bufferout,"%d",buffer);//atoi?
+            ret_out = write (output_fd, bufferout, (ssize_t)ret_in);
+            
             if(ret_out != ret_in){
                 /* Write error */
                 perror("write\n");
                 return 4;
             }
+            ret_in = read(input_fd, buffer, BUF_SIZE);
     }
  
     /* Close file descriptors */

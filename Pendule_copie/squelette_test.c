@@ -23,59 +23,16 @@ MODULE_LICENSE("GPL");
 #define PRIORITE 1
 
 
-
+/*
 u16 angle_buff[2];
 u16 position_buff[2];
-u16 commande_buff[2];
+u16 commande_buff[2];*/
 RTIME now;
 
 /* RT_TASK */
 static RT_TASK tache_horloge;
 
 /* tache generation dent de scie */
-void test(long arg) {
-
-  u16 i=0;
-  unsigned int f=0;
-   while (1) 
-   {
-    i=ReadAD();
-//Lecture pour 0 à 10V
-    f=(unsigned int)i;
-    f=f*2+f/2;
-    printk("Voltage=%dmV\n",f);
-    rt_task_wait_period();
- }
-}
-
-
-
-
-void test2(long arg){
-	
-	int voltage=0;
-   while (1) 
-   {
-   if(SetChanel(0x00)!=0x00)
-      printk("SetChannel=0x00\n");
-  else
-      printk("No answer\n");
-    voltage = ReadAD();
-    printk("ValueRead channel 0=%d\n",(unsigned int)voltage);
-    SetDAVol(0,valueToVoltagePolar(5,(int)(voltage)));
-    
-      if(SetChanel(0x01)!=0x00)
-      printk("SetChannel=0x01\n");
-  else
-      printk("No answer\n");
-    voltage = ReadAD();
-    printk("ValueRead channel 1=%d\n",(unsigned int)voltage);
-    SetDAVol(1,valueToVoltagePolar(10,(int)(voltage)));
-    
-    rt_task_wait_period();
- }
- 
-}
 
 void test3(long arg){
 
@@ -85,23 +42,18 @@ void test3(long arg){
 	//float commande=0;
 	RTIME nowp;
 	//int status;
-	int conversion;
-	int temps;
-	
+	int temps=0;
+	nowp     = now;
 	while(1){
 		
 		
 		angle    = (int) acquisition_angle();
 		position = (int) acquisition_position();
-		nowp     = now;
+		//nowp     = now;
 		now      = rt_get_time_ns();
-		temps = (int)((now-nowp)/10000);
-		printk("Temps:%d angle=%d, position%d",temps,angle,position);
+		temps = (((int)now - (int)nowp )/10000);
+		printk("Temps= %d angle= %d, position= %d\n",temps,angle,position);
 		
-		
-
-		
-
 		rtf_put(0,&separateur2,4);
 		rtf_put(0,&temps,4);	
 		rtf_put(0,&separateur1,4);
@@ -141,7 +93,7 @@ static int test_init(void) {
   now = rt_get_time();
   rt_task_make_periodic(&tache_horloge, now, nano2count(PERIODE_CONTROL));
  
- 		now=(int)rt_get_time_ns();
+ 		now=rt_get_time_ns();
 
  
  

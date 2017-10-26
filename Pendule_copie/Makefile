@@ -1,7 +1,7 @@
-obj-m	   := 3718.o 3712.o controller1.o sensor.o controller2.o pendule1.o pendule2.o SJA1000.o squelette_test.o controller.o
+obj-m	   := 3718.o 3712.o  sensor.o controller.o  squelette_test.o
 
 PATH := /opt/x86_64/gcc/gcc-3.4.4/bin:$(PATH)
-KIT = arcom22.esiee.fr
+KIT = arcom20.esiee.fr
 CURRENT = 2.6.16.14-arcom1
 KDIR = /usr/lib/arcom/lib/modules/${CURRENT}/build
 PWD = $(shell pwd)
@@ -11,13 +11,14 @@ default:
 	@echo PWD = $(PWD)
 	@echo CURRENT = $(CURRENT)
 	@echo KDIR = $(KDIR)
+	/opt/x86.64/gcc/gcc-3.4.4/bin|gcc -m32 -march=i386 bigbrother.c -o bigbrother
 	i386 -B --uname-2.6 make -C $(KDIR) M=$(PWD) modules
 
 clean:
 	-rm -f *.o *.ko .*.cmd .*.flags *.mod.c *~
 	-rm -r .tmp*
 send:
-	scp *.ko runarcom arcom@$(KIT):/home/arcom
+	scp *.ko runarcom bigbrother arcom@$(KIT):/home/arcom
 	ssh arcom@$(KIT)
 
 send3: 

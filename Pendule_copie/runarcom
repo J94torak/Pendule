@@ -9,12 +9,11 @@ EOF
 read junk
 sudo insmod /usr/realtime/modules/rtai_hal.ko
 sudo insmod /usr/realtime/modules/rtai_sched.ko
+sudo insmod /usr/realtime/modules/rtai_fifos.ko
 sudo insmod 3718.ko
 sudo insmod 3712.ko
 sudo insmod sensor.ko
-sudo insmod controller1.ko
-sudo insmod controller2.ko
-sudo insmod SJA1000.ko
+sudo insmod controller.ko
 sudo insmod $1.ko
 
 lsmod
@@ -23,11 +22,10 @@ echo "Tapez <return> pour l'arreter."
 read junk
 
 sudo rmmod $1
-sudo rmmod SJA1000
-sudo rmmod controller2
-sudo rmmod controller1
+sudo rmmod controller
 sudo rmmod sensor
 sudo rmmod 3712
 sudo rmmod 3718
+sudo rmmod /usr/realtime/modules/rtai_fifos
 sudo rmmod rtai_sched
 sudo rmmod rtai_hal
