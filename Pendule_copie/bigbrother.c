@@ -14,8 +14,8 @@ int main(int argc, char* argv[]) {
 
     int input_fd, output_fd;    /* Input and output file descriptors */
     ssize_t ret_in, ret_out;    /* Number of bytes returned by read() and write() */
-    int buffer[3000];      /* Character buffer */
-    int bufferout[3000];
+    int buffer[3000];      /* Character buffer */ //transmormer en int seulement
+    int bufferout[3000];// Transformer en char[3000]
     char * input;
     char * output;
     int i,j;
@@ -66,12 +66,12 @@ int main(int argc, char* argv[]) {
  	printf("i=%d\n",i);
  	printf("output_fd=%d\n",output_fd);
     /* Copy process */
-    ret_in = read (input_fd, buffer, BUF_SIZE);
+    ret_in = read (input_fd, buffer, BUF_SIZE);// BUF_SIZE=4 taille int //Ecrire do while // faire test sur int
     while((ret_in ) > 0){
     		printf("ret_in=%d\n",ret_in);
     		
     		sprintf(bufferout,"%d",buffer);//atoi?
-            ret_out = write (output_fd, bufferout, (ssize_t)ret_in);
+            ret_out = write (output_fd, bufferout, (ssize_t)ret_in);// taille écrire 4
             
             if(ret_out != ret_in){
                 /* Write error */
