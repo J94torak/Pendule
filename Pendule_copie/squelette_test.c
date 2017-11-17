@@ -43,7 +43,7 @@ void test3(long arg){
 	RTIME nowp;
 	//int status;
 	int temps=0;
-	nowp     = now;
+	nowp=rt_get_time_ns();
 	while(1){
 		
 		
@@ -51,7 +51,7 @@ void test3(long arg){
 		position = (int) acquisition_position();
 		//nowp     = now;
 		now      = rt_get_time_ns();
-		temps = (((int)now - (int)nowp )/10000);
+		temps = (int)((now - nowp )<<10);
 		printk("Temps= %d angle= %d, position= %d\n",temps,angle,position);
 		
 		rtf_put(0,&separateur2,4);
